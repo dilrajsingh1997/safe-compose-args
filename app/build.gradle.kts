@@ -7,6 +7,7 @@ plugins {
 
     kotlin("android")
     kotlin("kapt")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -72,6 +73,9 @@ dependencies {
     implementation(Dependency.AndroidX.contstraintlayout)
     testImplementation(Dependency.Test.junit4)
 
+    implementation(project(":annotation"))
+    ksp(project(com.example.buildSrc.properties.KspProject.composeBuilder))
+
     implementation("androidx.activity:activity-compose:1.4.0")
     implementation("androidx.compose.material:material:1.0.5")
     implementation("androidx.compose.animation:animation:1.0.5")
@@ -80,4 +84,16 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.0.5")
 
     appLocalProjectDependencies()
+}
+
+kotlin.sourceSets.main {
+    kotlin.srcDirs(
+        file("$buildDir/generated/ksp/"),
+    )
+}
+
+ksp {
+    // Passing an argument to the symbol processor.
+    // Change value to "true" in order to apply the argument.
+    arg("ignoreGenericArgs", "false")
 }

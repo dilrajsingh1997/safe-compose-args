@@ -8,6 +8,8 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.safecomposeargs.lol.functionWithoutArgs
+import com.example.safecomposeargs.lol.myAmazingFunction
 import com.example.safecomposeargs.ui.theme.SafeComposeArgsTheme
 
 class MainActivity : ComponentActivity() {
@@ -21,6 +23,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+        functionWithoutArgs()
     }
 }
 

@@ -5,6 +5,7 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":annotation"))
     implementation(Dependency.Kotlin.stdlib)
     implementation(Dependency.Ksp.symbolProcessingApi)
 }
