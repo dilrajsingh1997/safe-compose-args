@@ -43,7 +43,9 @@ android {
         kotlinCompilerVersion = "1.5.30"
         kotlinCompilerExtensionVersion = "1.0.3"
     }
-    (this as ExtensionAware).extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions>("kotlinOptions") {
+    (this as ExtensionAware).extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions>(
+        "kotlinOptions"
+    ) {
         jvmTarget = "1.8"
         useIR = true
     }
@@ -76,12 +78,24 @@ dependencies {
     implementation(project(":annotation"))
     ksp(project(com.example.buildSrc.properties.KspProject.composeBuilder))
 
-    implementation("androidx.activity:activity-compose:1.4.0")
-    implementation("androidx.compose.material:material:1.0.5")
-    implementation("androidx.compose.animation:animation:1.0.5")
-    implementation("androidx.compose.ui:ui-tooling:1.0.5")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.0.5")
+    implementation(Dependency.Compose.runtime)
+    implementation(Dependency.Compose.material)
+    implementation(Dependency.Compose.ui)
+    implementation(Dependency.Compose.toolingPreview)
+    debugImplementation(Dependency.Compose.tooling)
+    implementation(Dependency.Compose.constraintLayout)
+    implementation(Dependency.Compose.paging)
+    implementation(Dependency.Compose.navigation)
+    implementation(Dependency.Compose.uiUtil)
+
+    implementation(Dependency.Accompanist.inset)
+    implementation(Dependency.Accompanist.system)
+    implementation(Dependency.Accompanist.insetUi)
+    implementation(Dependency.Accompanist.navMaterial)
+    implementation(Dependency.Accompanist.placeholder)
+    implementation(Dependency.Accompanist.permissions)
+    implementation(Dependency.Accompanist.pager)
+    implementation(Dependency.Accompanist.placeholder)
 
     appLocalProjectDependencies()
 }

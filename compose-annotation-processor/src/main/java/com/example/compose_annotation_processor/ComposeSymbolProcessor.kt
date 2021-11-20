@@ -10,8 +10,18 @@ class ComposeSymbolProcessor(
     private val logger: KSPLogger,
     private val codeGenerator: CodeGenerator,
 ) : SymbolProcessor {
-    operator fun OutputStream.plusAssign(str: String) {
-        this.write(str.toByteArray())
+    private var tabs = 0
+
+    infix fun OutputStream.addLine(line: String) {
+        this.write("\n".toByteArray())
+        repeat((1..tabs).count()) {
+            this.write("\t".toByteArray())
+        }
+        this.write(line.toByteArray())
+    }
+
+    infix fun OutputStream.addPhrase(line: String) {
+        this.write(line.toByteArray())
     }
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
@@ -21,112 +31,254 @@ class ComposeSymbolProcessor(
 
         if (!symbols.iterator().hasNext()) return emptyList()
 
-        val packageName = "com.example.safecomposeargs."
+        val packageName = "com.example.safecomposeargs"
         val file = codeGenerator.createNewFile(
             dependencies = Dependencies(false, *resolver.getAllFiles().toList().toTypedArray()),
             packageName = packageName,
             fileName = "GeneratedFunctions"
         )
-        file += "package $packageName\n"
+        file addLine "package $packageName"
+        file addLine "import androidx.navigation.*"
 
-        symbols.forEach { it.accept(Visitor(file), Unit) }
+        symbols.forEach { it.accept(Visitor(file, resolver), Unit) }
 
         file.close()
 
         return symbols.filterNot { it.validate() }.toList()
     }
 
-    inner class Visitor(private val file: OutputStream) : KSVisitorVoid() {
+    inner class Visitor(private val file: OutputStream, private val resolver: Resolver) :
+        KSVisitorVoid() {
 
         override fun visitClassDeclaration(classDeclaration: KSClassDeclaration, data: Unit) {
-            if (classDeclaration.classKind != ClassKind.INTERFACE) {
-                logger.error("Only interface can be annotated with @Function", classDeclaration)
-                return
-            }
-
             val annotation: KSAnnotation = classDeclaration.annotations.first {
                 it.shortName.asString() == "ComposeDestination"
             }
 
             val nameArgument: KSValueArgument = annotation.arguments
-                .first { arg -> arg.name?.asString() == "name" }
+                .first { arg -> arg.name?.asString() == "route" }
 
-            val functionName = nameArgument.value as String
+            val route = nameArgument.value as String
 
             val properties: Sequence<KSPropertyDeclaration> = classDeclaration.getAllProperties()
-                .filter { it.validate() }
+            var propertyCount = 0
 
-            file += "\n"
-            if (properties.iterator().hasNext()) {
-                file += "fun $functionName(\n"
-                properties.forEach { prop ->
-                    visitPropertyDeclaration(prop, Unit)
+            properties.forEach { propertyCount ++ }
+
+            val className = route.replaceFirstChar { it.uppercaseChar() }
+            val dataClassName = "${className}Args"
+
+            file addLine "class ${className}Destination {"
+            tabs++
+
+            if (propertyCount > 0) {
+                file addLine "data class $dataClassName ("
+                tabs++
+
+                properties.forEach { property ->
+                    val argumentName = property.simpleName.asString()
+                    val resolvedType: KSType = property.type.resolve()
+                    file addLine "val $argumentName: "
+                    file addPhrase (resolvedType.declaration.qualifiedName?.asString() ?: run {
+                        logger.error("Invalid property type", property)
+                        return
+                    })
+                    file addPhrase if (resolvedType.nullability == Nullability.NULLABLE) "?" else ""
+                    file addPhrase ", "
                 }
-                file += ") {\n"
 
-            } else {
-                file += "fun $functionName() {\n"
+                tabs--
+                file addLine ")"
             }
 
-            file += "    println(\"Hello from $functionName\")\n"
-            file += "}\n"
+            file addLine "companion object {"
+            tabs ++
+
+            if (propertyCount > 0) {
+                file addLine "fun parseArguments(backStackEntry: NavBackStackEntry): $dataClassName {"
+                tabs++
+
+                file addLine "return "
+                file addPhrase "$dataClassName("
+                tabs++
+
+                properties.forEach { property ->
+                    val argumentName = property.simpleName.asString()
+                    val resolvedType: KSType = property.type.resolve()
+
+                    fun getParsedElement(): String {
+                        return try {
+                            when (resolver.getClassDeclarationByName(resolvedType.declaration.qualifiedName!!)
+                                ?.toString()) {
+                                "Boolean" -> "backStackEntry.arguments?.getBoolean(\"$argumentName\") ?: false"
+                                "String" -> "backStackEntry.arguments?.getString(\"$argumentName\") ?: \"\""
+                                else -> ""
+                            }
+                        } catch (e: Exception) {
+                            ""
+                        }
+                    }
+
+                    file addLine "$argumentName = ${getParsedElement()}"
+                    file addPhrase ", "
+                }
+
+                tabs--
+                file addLine ")"
+
+                tabs--
+                file addLine "}"
+            }
+
+            var argumentString = ""
+            var count = 0
+            file addLine "val argumentList"
+            file addPhrase ": MutableList<NamedNavArgument> "
+            tabs ++
+            file addLine "get() = mutableListOf("
+            count = 0
+            properties.forEach { property ->
+                count ++
+                val argumentName = property.simpleName.asString()
+                val resolvedType: KSType = property.type.resolve()
+
+//                logger.error(resolver.getClassDeclarationByName(resolvedType.declaration.qualifiedName!!), null)
+
+                fun getElementNavType(): String {
+                    return try {
+                        when (resolver.getClassDeclarationByName(resolvedType.declaration.qualifiedName!!)
+                            ?.toString()) {
+                            "Boolean" -> "NavType.BoolType"
+                            "String" -> "NavType.StringType"
+                            else -> ""
+                        }
+                    } catch (e: Exception) {
+                        ""
+                    }
+                }
+
+                tabs ++
+                file addLine "navArgument(\"$argumentName\") {"
+                tabs ++
+                file addLine "type = ${getElementNavType()}"
+                tabs --
+                file addLine "},"
+                tabs --
+
+                argumentString += "$argumentName={$argumentName}"
+                if (count != propertyCount) {
+                    argumentString += ","
+                }
+            }
+            file addLine ")"
+            tabs --
+            file addLine "fun getDestination("
+            properties.forEach { property ->
+                val argumentName = property.simpleName.asString()
+                val resolvedType: KSType = property.type.resolve()
+                file addPhrase "$argumentName: "
+                file addPhrase (resolvedType.declaration.qualifiedName?.asString() ?: run {
+                    logger.error("Invalid property type", property)
+                    return
+                })
+                file addPhrase if (resolvedType.nullability == Nullability.NULLABLE) "?" else ""
+                file addPhrase ", "
+            }
+            file addPhrase "): String {"
+            tabs ++
+
+            file addLine "return \"$route${if (propertyCount > 0) "?" else ""}\" + "
+            tabs ++
+            tabs ++
+            count = 0
+            properties.forEach { property ->
+                count ++
+                val argumentName = property.simpleName.asString()
+
+                file addLine "\"$argumentName="
+                file addPhrase "$$argumentName"
+                if (count == propertyCount) {
+                    file addPhrase "\""
+                } else {
+                    file addPhrase ",\""
+                }
+                file addPhrase " + "
+            }
+            file addLine "\"\""
+            tabs --
+            tabs --
+
+            tabs --
+            file addLine "}"
+            file addLine "val route = \"$route"
+            if (argumentString.isNotEmpty()) {
+                file addPhrase "?"
+                file addPhrase argumentString
+            }
+            file addPhrase "\""
+            tabs --
+            file addLine "}"
+            tabs--
+            file addLine "}"
         }
 
         override fun visitPropertyDeclaration(property: KSPropertyDeclaration, data: Unit) {
             val argumentName = property.simpleName.asString()
-            file += "    $argumentName: "
+            file addLine "\t$argumentName: "
 
             val resolvedType: KSType = property.type.resolve()
-            file += resolvedType.declaration.qualifiedName?.asString() ?: run {
+            file addLine (resolvedType.declaration.qualifiedName?.asString() ?: run {
                 logger.error("Invalid property type", property)
                 return
-            }
-            file += if (resolvedType.nullability == Nullability.NULLABLE) "?" else ""
+            })
+            file addLine if (resolvedType.nullability == Nullability.NULLABLE) "?" else ""
 
-            val genericArguments: List<KSTypeArgument> = property.type.element?.typeArguments ?: emptyList()
+            val genericArguments: List<KSTypeArgument> =
+                property.type.element?.typeArguments ?: emptyList()
             visitTypeArguments(genericArguments)
 
-            file += ",\n"
+            file addLine ","
         }
 
         private fun visitTypeArguments(typeArguments: List<KSTypeArgument>) {
             if (typeArguments.isNotEmpty()) {
-                file += "<"
+                file addLine "<"
                 typeArguments.forEachIndexed { i, arg ->
                     visitTypeArgument(arg, data = Unit)
-                    if (i < typeArguments.lastIndex) file += ", "
+                    if (i < typeArguments.lastIndex) file addLine ", "
                 }
-                file += ">"
+                file addLine ">"
             }
         }
 
         override fun visitTypeArgument(typeArgument: KSTypeArgument, data: Unit) {
             if (options["ignoreGenericArgs"] == "true") {
-                file += "*"
+                file addLine "*"
                 return
             }
 
             when (val variance: Variance = typeArgument.variance) {
                 Variance.STAR -> {
-                    file += "*"
+                    file addLine "*"
                     return
                 }
                 Variance.COVARIANT, Variance.CONTRAVARIANT -> {
-                    file += variance.label
-                    file += " "
+                    file addLine variance.label
+                    file addLine " "
                 }
                 Variance.INVARIANT -> {
                     // do nothing
                 }
             }
             val resolvedType: KSType? = typeArgument.type?.resolve()
-            file += resolvedType?.declaration?.qualifiedName?.asString() ?: run {
+            file addLine (resolvedType?.declaration?.qualifiedName?.asString() ?: run {
                 logger.error("Invalid type argument", typeArgument)
                 return
-            }
-            file += if (resolvedType?.nullability == Nullability.NULLABLE) "?" else ""
+            })
+            file addLine if (resolvedType.nullability == Nullability.NULLABLE) "?" else ""
 
-            val genericArguments: List<KSTypeArgument> = typeArgument.type?.element?.typeArguments ?: emptyList()
+            val genericArguments: List<KSTypeArgument> =
+                typeArgument.type?.element?.typeArguments ?: emptyList()
             visitTypeArguments(genericArguments)
         }
     }
