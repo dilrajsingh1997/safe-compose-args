@@ -112,6 +112,9 @@ class ComposeSymbolProcessor(
                                 ?.toString()) {
                                 "Boolean" -> "backStackEntry.arguments?.getBoolean(\"$argumentName\") ?: false"
                                 "String" -> "backStackEntry.arguments?.getString(\"$argumentName\") ?: \"\""
+                                "Float" -> "backStackEntry.arguments?.getFloat(\"$argumentName\") ?: 0F"
+                                "Int" -> "backStackEntry.arguments?.getInt(\"$argumentName\") ?: 0"
+                                "Long" -> "backStackEntry.arguments?.getLong(\"$argumentName\") ?: 0L"
                                 else -> ""
                             }
                         } catch (e: Exception) {
@@ -150,6 +153,9 @@ class ComposeSymbolProcessor(
                             ?.toString()) {
                             "Boolean" -> "NavType.BoolType"
                             "String" -> "NavType.StringType"
+                            "Float" -> "NavType.FloatType"
+                            "Int" -> "NavType.IntType"
+                            "Long" -> "NavType.LongType"
                             else -> ""
                         }
                     } catch (e: Exception) {
