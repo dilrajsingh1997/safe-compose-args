@@ -115,7 +115,10 @@ class ComposeSymbolProcessor(
                                 "Float" -> "backStackEntry.arguments?.getFloat(\"$argumentName\") ?: 0F"
                                 "Int" -> "backStackEntry.arguments?.getInt(\"$argumentName\") ?: 0"
                                 "Long" -> "backStackEntry.arguments?.getLong(\"$argumentName\") ?: 0L"
-                                else -> ""
+                                else -> {
+                                    logger.error("complex data types not yet supported", property)
+                                    ""
+                                }
                             }
                         } catch (e: Exception) {
                             ""
@@ -145,8 +148,6 @@ class ComposeSymbolProcessor(
                 val argumentName = property.simpleName.asString()
                 val resolvedType: KSType = property.type.resolve()
 
-//                logger.error(resolver.getClassDeclarationByName(resolvedType.declaration.qualifiedName!!), null)
-
                 fun getElementNavType(): String {
                     return try {
                         when (resolver.getClassDeclarationByName(resolvedType.declaration.qualifiedName!!)
@@ -156,7 +157,10 @@ class ComposeSymbolProcessor(
                             "Float" -> "NavType.FloatType"
                             "Int" -> "NavType.IntType"
                             "Long" -> "NavType.LongType"
-                            else -> ""
+                            else -> {
+                                logger.error("complex data types not yet supported", property)
+                                ""
+                            }
                         }
                     } catch (e: Exception) {
                         ""
