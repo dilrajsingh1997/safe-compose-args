@@ -73,6 +73,10 @@ object Dependency {
         const val viewModelCompose = "androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha07"
     }
 
+    object Gson {
+        const val gson = "com.google.code.gson:gson:2.8.7"
+    }
+
     object Accompanist {
         const val version = "0.19.0"
         const val permissions = "com.google.accompanist:accompanist-permissions:$version"

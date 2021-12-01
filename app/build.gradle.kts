@@ -96,6 +96,7 @@ dependencies {
     implementation(Dependency.Accompanist.permissions)
     implementation(Dependency.Accompanist.pager)
     implementation(Dependency.Accompanist.placeholder)
+    implementation(Dependency.Gson.gson)
 
     appLocalProjectDependencies()
 }
