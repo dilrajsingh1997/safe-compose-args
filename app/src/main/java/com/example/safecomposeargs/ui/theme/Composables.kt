@@ -40,7 +40,17 @@ fun DemoScreen() {
                 ) {
                     Text(text = "This is home page", textAlign = TextAlign.Center)
                     Spacer(modifier = Modifier.height(20.dp))
-                    Button(onClick = { graph.openUserPage(UUID.randomUUID().toString(), false) }) {
+                    Button(onClick = { graph.openUserPage(
+                        UUID.randomUUID().toString(),
+                        false,
+                        intArrayOf(1, 2, 5),
+                        arrayListOf("user1, user2"),
+                        User(11, "user11"),
+                        arrayListOf(
+                            User(22, "user22"),
+                            User(33, "User33")
+                        )
+                    ) }) {
                         Text(text = "Go to user page", textAlign = TextAlign.Center)
                     }
                     Spacer(modifier = Modifier.height(20.dp))
@@ -59,7 +69,7 @@ fun DemoScreen() {
             route = UserPageDestination.route,
             arguments = UserPageDestination.argumentList
         ) { backStackEntry ->
-            val (userId, isLoggedIn) = UserPageDestination.parseArguments(backStackEntry)
+            val (userId, isLoggedIn, userIds, userNames, uniqueUser, uniqueUsers) = UserPageDestination.parseArguments(backStackEntry)
             Box(modifier = Modifier.fillMaxSize()) {
                 Column(
                     modifier = Modifier.align(Alignment.Center),
@@ -68,6 +78,14 @@ fun DemoScreen() {
                     Text(text = "This is user page with userId: $userId", textAlign = TextAlign.Center)
                     Spacer(modifier = Modifier.height(20.dp))
                     Text(text = "Is user logged in $isLoggedIn", textAlign = TextAlign.Center)
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Text(text = "User ids is ${userIds.joinToString { it.toString() }}", textAlign = TextAlign.Center)
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Text(text = "User names is ${userNames.joinToString { it }}", textAlign = TextAlign.Center)
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Text(text = "Unique User is ${uniqueUser.id}${uniqueUser.name}", textAlign = TextAlign.Center)
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Text(text = "Unique Users are ${uniqueUsers.joinToString(separator = " -- ") { it.id.toString() + it.name }}", textAlign = TextAlign.Center)
                 }
             }
         }
