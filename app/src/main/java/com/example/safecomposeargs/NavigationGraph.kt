@@ -38,32 +38,3 @@ abstract class TncPage {
 abstract class EndScreen {
     abstract val endText: String
 }
-
-//@ComposeDestination(route = "test")
-//abstract class test {
-//    abstract val temp: temp
-//}
-
-data class temp(val xx: String) : Parcelable {
-    constructor(parcel: Parcel) : this(parcel.readString() ?: "") {
-    }
-
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(xx)
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    companion object CREATOR : Parcelable.Creator<temp> {
-        override fun createFromParcel(parcel: Parcel): temp {
-            return temp(parcel)
-        }
-
-        override fun newArray(size: Int): Array<temp?> {
-            return arrayOfNulls(size)
-        }
-    }
-
-}

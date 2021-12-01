@@ -5,19 +5,11 @@ import org.gradle.kotlin.dsl.project
 import kotlin.reflect.KClass
 import kotlin.reflect.full.declaredMembers
 
-//object LocalProject {
-//    const val library = ":annotation"
-//}
-
 object KspProject {
     const val composeBuilder = ":compose-annotation-processor"
 }
 
 fun DependencyHandlerScope.appLocalProjectDependencies() {
-//    val localProjects = buildLocalProjects(LocalProject::class)
-//    for ((_, projectName) in localProjects) {
-//        "implementation"(project(projectName))
-//    }
 }
 
 fun buildLocalProjects(kClass: KClass<out Any>): HashMap<String, String> {
