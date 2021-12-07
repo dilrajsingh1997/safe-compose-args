@@ -7,7 +7,6 @@ import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.KSTypeArgument
-import com.google.devtools.ksp.symbol.KSValueArgument
 import com.google.devtools.ksp.symbol.KSVisitorVoid
 import com.google.devtools.ksp.symbol.Nullability
 import com.google.devtools.ksp.symbol.Variance
@@ -17,15 +16,7 @@ class ComposeDestinationVisitor(private val file: OutputStream, private val reso
     KSVisitorVoid() {
 
     override fun visitClassDeclaration(classDeclaration: KSClassDeclaration, data: Unit) {
-
-        val annotation: KSAnnotation = classDeclaration.annotations.first {
-            it.shortName.asString() == "ComposeDestination"
-        }
-
-        val nameArgument: KSValueArgument = annotation.arguments
-            .first { arg -> arg.name?.asString() == "route" }
-
-        val route = nameArgument.value as String
+        val route = classDeclaration.simpleName.asString()
         val properties: Sequence<KSPropertyDeclaration> = classDeclaration.getAllProperties()
 
         val propertyMap = getPropertyMap(properties, logger, resolver) ?: run {
@@ -33,10 +24,9 @@ class ComposeDestinationVisitor(private val file: OutputStream, private val reso
             return
         }
 
-        val className = route.replaceFirstChar { it.uppercaseChar() }
-        val dataClassName = "${className}Args"
+        val dataClassName = "${route}Args"
 
-        file addLine "class ${className}Destination {"
+        file addLine "class ${route}Destination {"
         tabs++
 
         if (propertyMap.isNotEmpty()) {
@@ -149,7 +139,7 @@ class ComposeDestinationVisitor(private val file: OutputStream, private val reso
                     ComposeArgumentType.FLOAT_ARRAY -> "FloatArrayType"
                     ComposeArgumentType.LONG_ARRAY -> "LongArrayType"
                     else -> {
-                        "${className}_${propertyInfo.propertyName.replaceFirstChar { it.uppercase() }}NavType"
+                        "${route}_${propertyInfo.propertyName.replaceFirstChar { it.uppercase() }}NavType"
                     }
                 }
             }

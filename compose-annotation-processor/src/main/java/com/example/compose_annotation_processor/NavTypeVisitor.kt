@@ -19,14 +19,7 @@ class NavTypeVisitor(private val file: OutputStream, private val resolver: Resol
     override fun visitClassDeclaration(classDeclaration: KSClassDeclaration, data: Unit) {
         val properties: Sequence<KSPropertyDeclaration> = classDeclaration.getAllProperties()
 
-        val annotation: KSAnnotation = classDeclaration.annotations.first {
-            it.shortName.asString() == "ComposeDestination"
-        }
-
-        val nameArgument: KSValueArgument = annotation.arguments
-            .first { arg -> arg.name?.asString() == "route" }
-
-        val route = nameArgument.value as String
+        val route = classDeclaration.simpleName.asString()
         val className = route.replaceFirstChar { it.uppercaseChar() }
 
         val propertyMap = getPropertyMap(properties, logger, resolver) ?: run {

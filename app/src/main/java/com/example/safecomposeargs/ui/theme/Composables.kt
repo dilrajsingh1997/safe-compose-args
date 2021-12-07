@@ -106,10 +106,10 @@ fun DemoScreen() {
         }
 
         composable(
-            route = TncDestination.route,
-            arguments = TncDestination.argumentList
+            route = TncPageDestination.route,
+            arguments = TncPageDestination.argumentList
         ) { backStackEntry ->
-            val (tncUrl) = TncDestination.parseArguments(backStackEntry)
+            val (tncUrl) = TncPageDestination.parseArguments(backStackEntry)
             Box(modifier = Modifier.fillMaxSize()) {
                 Column(
                     modifier = Modifier.align(Alignment.Center),

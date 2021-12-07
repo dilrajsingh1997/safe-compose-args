@@ -11,7 +11,7 @@ class NavigationGraph(private val navHostController: NavHostController) {
     }
 
     val openTncPage: (String) -> Unit = { tncUrl ->
-        navHostController.navigate(TncDestination.getDestination(tncUrl))
+        navHostController.navigate(TncPageDestination.getDestination(tncUrl))
     }
 
     val openEndScreen: (String) -> Unit = { endText ->
@@ -19,7 +19,7 @@ class NavigationGraph(private val navHostController: NavHostController) {
     }
 }
 
-@ComposeDestination(route = "userPage")
+@ComposeDestination
 abstract class UserPage {
     abstract val userId: String
     abstract val isLoggedIn: Boolean
@@ -56,19 +56,18 @@ data class User(
             return arrayOfNulls(size)
         }
     }
-
 }
 
-@ComposeDestination(route = "homePage")
+@ComposeDestination
 abstract class HomePage {
 }
 
-@ComposeDestination(route = "tnc")
+@ComposeDestination
 abstract class TncPage {
     abstract val tncUrl: String
 }
 
-@ComposeDestination(route = "endScreen")
+@ComposeDestination
 abstract class EndScreen {
     abstract val endText: String
 }
