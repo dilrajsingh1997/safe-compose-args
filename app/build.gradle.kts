@@ -1,6 +1,6 @@
-import com.example.buildSrc.properties.Dependency
-import com.example.buildSrc.properties.Dependency.compileSdk
-import com.example.buildSrc.properties.appLocalProjectDependencies
+import com.compose.type_safe_args.buildSrc.properties.Dependency
+import com.compose.type_safe_args.buildSrc.properties.Dependency.compileSdk
+import com.compose.type_safe_args.buildSrc.properties.appLocalProjectDependencies
 
 plugins {
     id("com.android.application")
@@ -76,7 +76,7 @@ dependencies {
     testImplementation(Dependency.Test.junit4)
 
     implementation(project(":annotation"))
-    ksp(project(com.example.buildSrc.properties.KspProject.composeBuilder))
+    ksp(project(com.compose.type_safe_args.buildSrc.properties.KspProject.composeBuilder))
 
     implementation(Dependency.Compose.runtime)
     implementation(Dependency.Compose.material)

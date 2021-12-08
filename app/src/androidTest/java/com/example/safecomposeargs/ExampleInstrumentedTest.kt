@@ -1,4 +1,4 @@
-package com.example.safecomposeargs
+package com.compose.type_safe_args.safecomposeargs
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.example.safecomposeargs", appContext.packageName)
+        assertEquals("com.compose.type_safe_args.safecomposeargs", appContext.packageName)
     }
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.safecomposeargs">
+    package="com.compose.type_safe_args.safecomposeargs">
 
     <application
         android:allowBackup="true"

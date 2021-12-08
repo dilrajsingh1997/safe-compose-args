@@ -1,4 +1,4 @@
-package com.example.safecomposeargs
+package com.compose.type_safe_args.safecomposeargs
 
 import org.junit.Test
 
