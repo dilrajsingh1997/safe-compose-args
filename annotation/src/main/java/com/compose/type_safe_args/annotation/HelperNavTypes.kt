@@ -1,10 +1,8 @@
-package com.compose.type_safe_args.safecomposeargs
+package com.compose.type_safe_args.annotation
 
-import android.net.Uri
 import android.os.Bundle
 import androidx.navigation.NavType
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 
 val gson = Gson()
 

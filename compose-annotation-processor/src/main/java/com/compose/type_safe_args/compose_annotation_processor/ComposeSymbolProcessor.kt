@@ -28,6 +28,7 @@ class ComposeSymbolProcessor(
         file addLine "import android.net.Uri"
         file addLine "import android.os.Bundle"
         file addLine "import com.google.gson.reflect.TypeToken"
+        file addLine "import com.compose.type_safe_args.annotation.*"
         file addLine ""
 
         symbols.forEach { it.accept(NavTypeVisitor(file, resolver, logger, options), Unit) }
