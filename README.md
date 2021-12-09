@@ -5,7 +5,7 @@ This is a compile-time annotation processor that will generate type-safe methods
 <br />
 [Part-2](https://proandroiddev.com/safe-compose-arguments-an-improved-way-to-navigate-in-jetpack-compose-part-2-218a6ae7a027)
 <br />
-# Integartion guide to include this as a library in your peoject
+# Integartion guide to include this as a library in your project
 [Part-3](https://proandroiddev.com/safe-compose-arguments-an-improved-way-to-navigate-in-jetpack-compose-part-3-2e5ab79b9a05)
 # Update:
 Now the annotation does not expect a string argument, as the class name will be used as a guide to generate the relative compose destination methods.
