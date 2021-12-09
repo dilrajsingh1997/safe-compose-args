@@ -2,12 +2,10 @@ package com.compose.type_safe_args.compose_annotation_processor
 
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
-import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.KSTypeArgument
-import com.google.devtools.ksp.symbol.KSValueArgument
 import com.google.devtools.ksp.symbol.KSVisitorVoid
 import com.google.devtools.ksp.symbol.Nullability
 import com.google.devtools.ksp.symbol.Variance
@@ -20,7 +18,6 @@ class NavTypeVisitor(private val file: OutputStream, private val resolver: Resol
         val properties: Sequence<KSPropertyDeclaration> = classDeclaration.getAllProperties()
 
         val route = classDeclaration.simpleName.asString()
-        val className = route.replaceFirstChar { it.uppercaseChar() }
 
         val propertyMap = getPropertyMap(properties, logger, resolver) ?: run {
             logger.error("invalid argument found")
@@ -39,7 +36,7 @@ class NavTypeVisitor(private val file: OutputStream, private val resolver: Resol
                 return@forEach
             }
 
-            file addLine "val ${className}_${propertyInfo.propertyName.replaceFirstChar { it.uppercase() }}NavType: NavType<"
+            file addLine "val ${route}_${propertyInfo.propertyName.replaceFirstChar { it.uppercase() }}NavType: NavType<"
             addVariableType(file, propertyInfo)
 
             file addPhrase "> = object : NavType<"
