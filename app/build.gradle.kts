@@ -18,18 +18,14 @@ android {
         minSdk = Dependency.minSdk
         targetSdk = Dependency.targetSdk
         vectorDrawables.useSupportLibrary = true
-
-        buildConfigField("String", "SAMPLE_VALUE", "\"Hello World~!\"")
     }
 
     buildTypes {
         getByName("debug") {
             isDebuggable = true
-            buildConfigField("boolean", "DEBUG_VALUE", "true")
         }
         getByName("release") {
             isDebuggable = false
-            buildConfigField("boolean", "DEBUG_VALUE", "false")
         }
     }
     buildFeatures {

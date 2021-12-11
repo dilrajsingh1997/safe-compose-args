@@ -1,3 +1,9 @@
+
+import com.android.build.api.variant.LibraryVariant
+import com.android.build.gradle.api.ApplicationVariant
+import com.android.build.gradle.api.BaseVariantOutput
+import com.android.build.gradle.internal.api.BaseVariantOutputImpl
+
 plugins {
     id("com.android.library")
     kotlin("android")
@@ -13,6 +19,9 @@ android {
         targetSdk = com.compose.type_safe_args.buildSrc.properties.Dependency.targetSdk
         vectorDrawables.useSupportLibrary = true
     }
+    version = "1.0.0"
+
+    setProperty("archivesBaseName", "${project.name}-$version")
 
     buildTypes {
         getByName("debug")

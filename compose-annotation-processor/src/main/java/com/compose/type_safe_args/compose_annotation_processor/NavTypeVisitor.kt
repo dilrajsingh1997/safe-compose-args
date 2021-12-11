@@ -41,7 +41,7 @@ class NavTypeVisitor(private val file: OutputStream, private val resolver: Resol
 
             file addPhrase "> = object : NavType<"
             addVariableType(file, propertyInfo)
-            file addPhrase ">(false) {"
+            file addPhrase ">(${propertyInfo.isNullable}) {"
             tabs++
 
             file addLine "override val name: String"
@@ -52,14 +52,29 @@ class NavTypeVisitor(private val file: OutputStream, private val resolver: Resol
 
             file addLine "override fun get(bundle: Bundle, key: String): "
             addVariableType(file, propertyInfo)
-            file addPhrase "? {"
+            file addPhrase " {"
             tabs++
 
             when (propertyInfo.composeArgumentType) {
-                ComposeArgumentType.PARCELABLE -> file addLine "return bundle.getParcelable(key)"
-                ComposeArgumentType.PARCELABLE_ARRAY -> file addLine "return bundle.getParcelableArrayList(key)"
+                ComposeArgumentType.PARCELABLE -> {
+                    file addLine "return bundle.getParcelable(key)"
+                    if (!propertyInfo.isNullable) {
+                        file addPhrase "!!"
+                    }
+                }
+                ComposeArgumentType.PARCELABLE_ARRAY -> {
+                    file addLine "return bundle.getParcelableArrayList(key)"
+                    if (!propertyInfo.isNullable) {
+                        file addPhrase "!!"
+                    }
+                }
                 ComposeArgumentType.SERIALIZABLE -> {
-                    file addLine "return bundle.getSerializable(key) as? "
+                    file addLine "return bundle.getSerializable(key)"
+                    file addPhrase " as"
+                    if (propertyInfo.isNullable) {
+                        file addPhrase "?"
+                    }
+                    file addPhrase " "
                     addVariableType(file, propertyInfo)
                 }
             }
@@ -98,8 +113,8 @@ class NavTypeVisitor(private val file: OutputStream, private val resolver: Resol
 
     private fun addVariableType(file: OutputStream, propertyInfo: PropertyInfo) {
         file addPhrase propertyInfo.resolvedClassQualifiedName
-        file addPhrase if (propertyInfo.isNullable) "?" else ""
         visitChildTypeArguments(propertyInfo.typeArguments)
+        file addPhrase if (propertyInfo.isNullable) "?" else ""
     }
 
     private fun visitChildTypeArguments(typeArguments: List<KSTypeArgument>) {

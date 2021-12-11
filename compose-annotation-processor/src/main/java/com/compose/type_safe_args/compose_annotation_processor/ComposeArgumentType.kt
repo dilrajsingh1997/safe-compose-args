@@ -10,7 +10,6 @@ enum class ComposeArgumentType {
     LONG_ARRAY,
     FLOAT_ARRAY,
     BOOLEAN_ARRAY,
-    STRING_ARRAY,
     PARCELABLE,
     PARCELABLE_ARRAY,
     SERIALIZABLE

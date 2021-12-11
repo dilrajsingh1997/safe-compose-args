@@ -67,34 +67,87 @@ class ComposeDestinationVisitor(private val file: OutputStream, private val reso
 
                 fun getParsedElement() {
                     when (propertyInfo.composeArgumentType) {
-                        ComposeArgumentType.BOOLEAN -> file addPhrase "backStackEntry.arguments?.getBoolean(\"$argumentName\") ?: false"
-                        ComposeArgumentType.STRING -> file addPhrase "backStackEntry.arguments?.getString(\"$argumentName\") ?: \"\""
-                        ComposeArgumentType.FLOAT -> file addPhrase "backStackEntry.arguments?.getFloat(\"$argumentName\") ?: 0F"
-                        ComposeArgumentType.INT -> file addPhrase "backStackEntry.arguments?.getInt(\"$argumentName\") ?: 0"
-                        ComposeArgumentType.LONG -> file addPhrase "backStackEntry.arguments?.getLong(\"$argumentName\") ?: 0L"
-                        ComposeArgumentType.INT_ARRAY -> file addPhrase "backStackEntry.arguments?.getIntArray(\"$argumentName\") ?: intArrayOf()"
-                        ComposeArgumentType.BOOLEAN_ARRAY -> file addPhrase "backStackEntry.arguments?.getBooleanArray(\"$argumentName\") ?: booleanArrayOf()"
-                        ComposeArgumentType.LONG_ARRAY -> file addPhrase "backStackEntry.arguments?.getLongArray(\"$argumentName\") ?: longArrayOf()"
-                        ComposeArgumentType.FLOAT_ARRAY -> file addPhrase "backStackEntry.arguments?.getFloatArray(\"$argumentName\") ?: floatArrayOf()"
-                        ComposeArgumentType.STRING_ARRAY -> {
-                            // todo
+                        ComposeArgumentType.BOOLEAN -> {
+                            file addPhrase "backStackEntry.arguments?.getBoolean(\"$argumentName\")"
+                            if (!propertyInfo.isNullable) {
+                                file addPhrase " ?: false"
+                            }
+                        }
+                        ComposeArgumentType.STRING -> {
+                            file addPhrase "backStackEntry.arguments?.getString(\"$argumentName\")"
+                            if (!propertyInfo.isNullable) {
+                                file addPhrase " ?: \"\""
+                            }
+                        }
+                        ComposeArgumentType.FLOAT -> {
+                            file addPhrase "backStackEntry.arguments?.getFloat(\"$argumentName\")"
+                            if (!propertyInfo.isNullable) {
+                                file addPhrase " ?: 0F"
+                            }
+                        }
+                        ComposeArgumentType.INT -> {
+                            file addPhrase "backStackEntry.arguments?.getInt(\"$argumentName\")"
+                            if (!propertyInfo.isNullable) {
+                                file addPhrase " ?: 0"
+                            }
+                        }
+                        ComposeArgumentType.LONG -> {
+                            file addPhrase "backStackEntry.arguments?.getLong(\"$argumentName\")"
+                            if (!propertyInfo.isNullable) {
+                                file addPhrase " ?: 0L"
+                            }
+                        }
+                        ComposeArgumentType.INT_ARRAY -> {
+                            file addPhrase "backStackEntry.arguments?.getIntArray(\"$argumentName\")"
+                            if (!propertyInfo.isNullable) {
+                                file addPhrase " ?: intArrayOf()"
+                            }
+                        }
+                        ComposeArgumentType.BOOLEAN_ARRAY -> {
+                            file addPhrase "backStackEntry.arguments?.getBooleanArray(\"$argumentName\")"
+                            if (!propertyInfo.isNullable) {
+                                file addPhrase " ?: booleanArrayOf()"
+                            }
+                        }
+                        ComposeArgumentType.LONG_ARRAY -> {
+                            file addPhrase "backStackEntry.arguments?.getLongArray(\"$argumentName\")"
+                            if (!propertyInfo.isNullable) {
+                                file addPhrase " ?: longArrayOf()"
+                            }
+                        }
+                        ComposeArgumentType.FLOAT_ARRAY -> {
+                            file addPhrase "backStackEntry.arguments?.getFloatArray(\"$argumentName\")"
+                            if (!propertyInfo.isNullable) {
+                                file addPhrase " ?: floatArrayOf()"
+                            }
                         }
                         ComposeArgumentType.PARCELABLE -> {
                             file addPhrase "backStackEntry.arguments?.getParcelable<"
                             addVariableType(file, propertyInfo)
-                            file addPhrase ">(\"$argumentName\") ?: throw NullPointerException(\"parcel value not found\")"
+                            file addPhrase ">(\"$argumentName\")"
+                            if (!propertyInfo.isNullable) {
+                                file addPhrase " ?: throw NullPointerException(\"parcel value not found\")"
+                            }
                         }
                         ComposeArgumentType.PARCELABLE_ARRAY -> {
                             file addPhrase "backStackEntry.arguments?.getParcelableArrayList"
                             visitChildTypeArguments(propertyInfo.typeArguments)
                             file addPhrase "(\"$argumentName\")"
-                            file addPhrase " ?: throw NullPointerException(\"parcel value not found\")"
+                            if (!propertyInfo.isNullable) {
+                                file addPhrase " ?: throw NullPointerException(\"parcel value not found\")"
+                            }
                         }
                         ComposeArgumentType.SERIALIZABLE -> {
                             file addPhrase "backStackEntry.arguments?.getSerializable"
-                            file addPhrase "(\"$argumentName\") as? "
+                            file addPhrase "(\"$argumentName\") as"
+                            if (propertyInfo.isNullable) {
+                                file addPhrase "?"
+                            }
+                            file addPhrase " "
                             addVariableType(file, propertyInfo)
-                            file addPhrase " ?: throw NullPointerException(\"parcel value not found\")"
+                            if (!propertyInfo.isNullable) {
+                                file addPhrase " ?: throw NullPointerException(\"parcel value not found\")"
+                            }
                         }
                     }
                 }
@@ -236,8 +289,8 @@ class ComposeDestinationVisitor(private val file: OutputStream, private val reso
 
     private fun addVariableType(file: OutputStream, propertyInfo: PropertyInfo) {
         file addPhrase propertyInfo.resolvedClassQualifiedName
-        file addPhrase if (propertyInfo.isNullable) "?" else ""
         visitChildTypeArguments(propertyInfo.typeArguments)
+        file addPhrase if (propertyInfo.isNullable) "?" else ""
     }
 
     override fun visitTypeArgument(typeArgument: KSTypeArgument, data: Unit) {
