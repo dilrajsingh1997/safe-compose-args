@@ -5,7 +5,7 @@
 * Adding support for nullable properties
 
 # 1.0.2
-* Now if you provide a `companion object` to the abstract class or interface definition, the processor will generate extension methods rather than creating a new class for getting the route. Below example demonstrates how the `getDestination` method will look with and without giving a `companion object`. This will improve navigation as the user can jump directly to the interface/abstract class definition to find the contract of the compose destination.
+* Now if you provide a `companion object` to the abstract class or interface definition, the processor will generate extension methods rather than creating a new class for getting the route. Below example demonstrates how the `getDestination` method will look with and without giving a `companion object`. This will improve navigation as the user can jump directly to the interface/abstract class definition to find the contract of the compose destination
 ```
 @ComposeDestination
 interface UserPage {
@@ -20,14 +20,14 @@ interface UserPage {
 }
 
 fun UserPage.Companion.getDestination(userId: String, isLoggedIn: Boolean, userIds: IntArray, userNames: ArrayList<String>, uniqueUser: User, uniqueUsers: ArrayList<User>, ): String {
-	return "UserPage?" + 
-			"userId=$userId," + 
-			"isLoggedIn=$isLoggedIn," + 
-			"userIds=${Uri.encode(gson.toJson(userIds))}," + 
-			"userNames=${Uri.encode(gson.toJson(userNames))}," + 
-			"uniqueUser=${Uri.encode(gson.toJson(uniqueUser))}," + 
-			"uniqueUsers=${Uri.encode(gson.toJson(uniqueUsers))}" + 
-			""
+    return "UserPage?" + 
+        "userId=$userId," + 
+        "isLoggedIn=$isLoggedIn," + 
+        "userIds=${Uri.encode(gson.toJson(userIds))}," + 
+        "userNames=${Uri.encode(gson.toJson(userNames))}," + 
+        "uniqueUser=${Uri.encode(gson.toJson(uniqueUser))}," + 
+        "uniqueUsers=${Uri.encode(gson.toJson(uniqueUsers))}" + 
+        ""
 }
 
 //
@@ -43,18 +43,18 @@ interface UserPage {
 }
 
 class UserPageDestination {
-	companion object {
-		fun getDestination(userId: String, isLoggedIn: Boolean, userIds: IntArray, userNames: ArrayList<String>, uniqueUser: User, uniqueUsers: ArrayList<User>, ): String {
-			return "UserPage?" + 
-					"userId=$userId," + 
-					"isLoggedIn=$isLoggedIn," + 
-					"userIds=${Uri.encode(gson.toJson(userIds))}," + 
-					"userNames=${Uri.encode(gson.toJson(userNames))}," + 
-					"uniqueUser=${Uri.encode(gson.toJson(uniqueUser))}," + 
-					"uniqueUsers=${Uri.encode(gson.toJson(uniqueUsers))}" + 
-					""
-		}
-	}
+    companion object {
+        fun getDestination(userId: String, isLoggedIn: Boolean, userIds: IntArray, userNames: ArrayList<String>, uniqueUser: User, uniqueUsers: ArrayList<User>, ): String {
+            return "UserPage?" + 
+                "userId=$userId," + 
+                "isLoggedIn=$isLoggedIn," + 
+                "userIds=${Uri.encode(gson.toJson(userIds))}," + 
+                "userNames=${Uri.encode(gson.toJson(userNames))}," + 
+                "uniqueUser=${Uri.encode(gson.toJson(uniqueUser))}," + 
+                "uniqueUsers=${Uri.encode(gson.toJson(uniqueUsers))}" + 
+                ""
+        }
+    }
 }
 ```
 * Adding support for default properties. To use a default property, you have to annotate that property with `@HasDefaultValue`. The annotation processor will pick these properties, and use the provider to set their values. Look at the following example-
