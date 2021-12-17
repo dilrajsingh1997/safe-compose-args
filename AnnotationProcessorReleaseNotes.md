@@ -30,7 +30,7 @@ fun UserPage.Companion.getDestination(userId: String, isLoggedIn: Boolean, userI
         ""
 }
 
-//
+// without companion object
 
 @ComposeDestination
 interface UserPage {
