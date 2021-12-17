@@ -2,7 +2,7 @@ package com.compose.type_safe_args.compose_annotation_processor
 
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
-import com.google.devtools.ksp.symbol.KSAnnotation
+import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSType
@@ -12,12 +12,32 @@ import com.google.devtools.ksp.symbol.Nullability
 import com.google.devtools.ksp.symbol.Variance
 import java.io.OutputStream
 
-class ComposeDestinationVisitor(private val file: OutputStream, private val resolver: Resolver, private val logger: KSPLogger, private val options: Map<String, String>, ) :
-    KSVisitorVoid() {
+class ComposeDestinationVisitor(
+    private val file: OutputStream,
+    private val resolver: Resolver,
+    private val logger: KSPLogger,
+    private val options: Map<String, String>,
+    private val argumentProviderMap: MutableMap<KSClassDeclaration, KSClassDeclaration>,
+) : KSVisitorVoid() {
 
     override fun visitClassDeclaration(classDeclaration: KSClassDeclaration, data: Unit) {
         val route = classDeclaration.simpleName.asString()
         val properties: Sequence<KSPropertyDeclaration> = classDeclaration.getAllProperties()
+
+        var singletonClass: KSClassDeclaration? = null
+        classDeclaration.declarations.forEach {
+            if (it is KSClassDeclaration && it.classKind == ClassKind.OBJECT) {
+                singletonClass = it
+            }
+        }
+
+        fun getSingletonExtension(): String {
+            return if (singletonClass != null) {
+                "${singletonClass?.qualifiedName?.asString().orEmpty()}."
+            } else {
+                ""
+            }
+        }
 
         val propertyMap = getPropertyMap(properties, logger, resolver) ?: run {
             logger.error("invalid argument found")
@@ -26,8 +46,10 @@ class ComposeDestinationVisitor(private val file: OutputStream, private val reso
 
         val dataClassName = "${route}Args"
 
-        file addLine "class ${route}Destination {"
-        tabs++
+        if (singletonClass == null) {
+            file addLine "class ${route}Destination {"
+            tabs++
+        }
 
         if (propertyMap.isNotEmpty()) {
             file addLine "data class $dataClassName ("
@@ -47,11 +69,13 @@ class ComposeDestinationVisitor(private val file: OutputStream, private val reso
             file addLine ")"
         }
 
-        file addLine "companion object {"
-        tabs++
+        if (singletonClass == null) {
+            file addLine "companion object {"
+            tabs++
+        }
 
         if (propertyMap.isNotEmpty()) {
-            file addLine "fun parseArguments(backStackEntry: NavBackStackEntry): $dataClassName {"
+            file addLine "fun ${getSingletonExtension()}parseArguments(backStackEntry: NavBackStackEntry): $dataClassName {"
             tabs++
 
             file addLine "return "
@@ -166,7 +190,7 @@ class ComposeDestinationVisitor(private val file: OutputStream, private val reso
 
         var argumentString = ""
         var count = 0
-        file addLine "val argumentList"
+        file addLine "val ${getSingletonExtension()}argumentList"
         file addPhrase ": MutableList<NamedNavArgument> "
         tabs++
         file addLine "get() = mutableListOf("
@@ -212,7 +236,17 @@ class ComposeDestinationVisitor(private val file: OutputStream, private val reso
         }
         file addLine ")"
         tabs--
-        file addLine "fun getDestination("
+
+        val providerClassName =
+            if (propertyMap.any { it.value.hasDefaultValue } &&
+                argumentProviderMap.containsKey(classDeclaration)
+            ) {
+                argumentProviderMap[classDeclaration]?.qualifiedName?.asString()
+            } else {
+                null
+            }
+
+        file addLine "fun ${getSingletonExtension()}getDestination("
         properties.forEach { property ->
 
             val propertyInfo = propertyMap[property] ?: run {
@@ -223,6 +257,15 @@ class ComposeDestinationVisitor(private val file: OutputStream, private val reso
 
             file addPhrase "$argumentName: "
             addVariableType(file, propertyInfo)
+            if (propertyInfo.hasDefaultValue) {
+                logger.info("$providerClassName is providing ${propertyInfo.propertyName}", property)
+                file addPhrase " = ${
+                     providerClassName ?: logger.error(
+                        "no provider found for $argumentName",
+                        property
+                    )
+                }.${argumentName}"
+            }
             file addPhrase ", "
         }
         file addPhrase "): String {"
@@ -264,16 +307,28 @@ class ComposeDestinationVisitor(private val file: OutputStream, private val reso
 
         tabs--
         file addLine "}"
-        file addLine "val route = \"$route"
+        file addLine "val ${getSingletonExtension()}route"
+        tabs ++
+
+        file addLine "get() = "
+        file addPhrase "\"$route"
         if (argumentString.isNotEmpty()) {
             file addPhrase "?"
             file addPhrase argumentString
         }
         file addPhrase "\""
-        tabs--
-        file addLine "}"
-        tabs--
-        file addLine "}"
+
+        tabs --
+
+        if (singletonClass == null) {
+            tabs--
+            file addLine "}"
+        }
+
+        if (singletonClass == null) {
+            tabs--
+            file addLine "}"
+        }
     }
 
     private fun visitChildTypeArguments(typeArguments: List<KSTypeArgument>) {

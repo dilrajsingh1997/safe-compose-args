@@ -27,11 +27,11 @@ fun DemoScreen() {
 
     NavHost(
         navController = navController,
-        startDestination = HomePageDestination.getDestination()
+        startDestination = HomePage.getDestination()
     ) {
         composable(
-            route = HomePageDestination.route,
-            arguments = HomePageDestination.argumentList
+            route = HomePage.route,
+            arguments = HomePage.argumentList
         ) { backStackEntry ->
             Box(modifier = Modifier.fillMaxSize()) {
                 Column(
@@ -41,11 +41,9 @@ fun DemoScreen() {
                     Text(text = "This is home page", textAlign = TextAlign.Center)
                     Spacer(modifier = Modifier.height(20.dp))
                     Button(onClick = { graph.openUserPage(
-                        UUID.randomUUID().toString(),
                         false,
                         intArrayOf(1, 2, 5),
                         arrayListOf("user1, user2"),
-                        User(11, "user11"),
                         arrayListOf(
                             User(22, "user22"),
                             User(33, "User33")
@@ -58,7 +56,7 @@ fun DemoScreen() {
                         Text(text = "Go to end screen page", textAlign = TextAlign.Center)
                     }
                     Spacer(modifier = Modifier.height(20.dp))
-                    Button(onClick = { graph.openTncPage("End url") }) {
+                    Button(onClick = { graph.openTncPage() }) {
                         Text(text = "Go to tnc page", textAlign = TextAlign.Center)
                     }
                 }
@@ -66,10 +64,10 @@ fun DemoScreen() {
         }
 
         composable(
-            route = UserPageDestination.route,
-            arguments = UserPageDestination.argumentList
+            route = UserPage.route,
+            arguments = UserPage.argumentList
         ) { backStackEntry ->
-            val (userId, isLoggedIn, userIds, userNames, uniqueUser, uniqueUsers) = UserPageDestination.parseArguments(backStackEntry)
+            val (userId, isLoggedIn, userIds, userNames, uniqueUser, uniqueUsers) = UserPage.parseArguments(backStackEntry)
             Box(modifier = Modifier.fillMaxSize()) {
                 Column(
                     modifier = Modifier.align(Alignment.Center),
@@ -91,10 +89,10 @@ fun DemoScreen() {
         }
 
         composable(
-            route = EndScreenDestination.route,
-            arguments = EndScreenDestination.argumentList
+            route = EndScreen.route,
+            arguments = EndScreen.argumentList
         ) { backStackEntry ->
-            val (endScreenText) = EndScreenDestination.parseArguments(backStackEntry)
+            val (endScreenText) = EndScreen.parseArguments(backStackEntry)
             Box(modifier = Modifier.fillMaxSize()) {
                 Column(
                     modifier = Modifier.align(Alignment.Center),
@@ -106,10 +104,10 @@ fun DemoScreen() {
         }
 
         composable(
-            route = TncPageDestination.route,
-            arguments = TncPageDestination.argumentList
+            route = TncPage.route,
+            arguments = TncPage.argumentList
         ) { backStackEntry ->
-            val (tncUrl) = TncPageDestination.parseArguments(backStackEntry)
+            val (tncUrl) = TncPage.parseArguments(backStackEntry)
             Box(modifier = Modifier.fillMaxSize()) {
                 Column(
                     modifier = Modifier.align(Alignment.Center),

@@ -87,7 +87,8 @@ fun getPropertyMap(
                         return null
                     }
                 }
-            }
+            },
+            hasDefaultValue = property.annotations.map { it.shortName.asString() }.any { it == "HasDefaultValue" }
         )
     }
     return propertyMap

@@ -10,5 +10,6 @@ data class PropertyInfo(
     val resolvedClassQualifiedName: String,
     val typeArguments: List<KSTypeArgument>,
     val isNullable: Boolean,
-    val composeArgumentType: ComposeArgumentType
+    val composeArgumentType: ComposeArgumentType,
+    val hasDefaultValue: Boolean
 )

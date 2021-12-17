@@ -4,7 +4,7 @@ plugins {
     kotlin("jvm")
 }
 
-version = "1.0.1"
+version = "1.0.2"
 
 dependencies {
     implementation(Dependency.Kotlin.stdlib)

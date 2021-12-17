@@ -3,30 +3,47 @@ package com.compose.type_safe_args.safecomposeargs
 import android.os.Parcel
 import android.os.Parcelable
 import androidx.navigation.NavHostController
+import com.compose.type_safe_args.annotation.ArgumentProvider
 import com.compose.type_safe_args.annotation.ComposeDestination
+import com.compose.type_safe_args.annotation.HasDefaultValue
 
 class NavigationGraph(private val navHostController: NavHostController) {
-    val openUserPage: (String, Boolean, IntArray, ArrayList<String>, User, ArrayList<User>) -> Unit = { userId, isLoggedIn, userIds, userNames, uniqueUser, uniqueUsers ->
-        navHostController.navigate(UserPageDestination.getDestination(userId, isLoggedIn, userIds, userNames, uniqueUser, uniqueUsers))
+    val openUserPage: (Boolean, IntArray, ArrayList<String>, ArrayList<User>) -> Unit = { isLoggedIn, userIds, userNames, uniqueUsers ->
+        navHostController.navigate(UserPage.getDestination(
+            isLoggedIn = isLoggedIn,
+            userIds = userIds,
+            userNames = userNames,
+            uniqueUsers = uniqueUsers
+        ))
     }
 
-    val openTncPage: (String) -> Unit = { tncUrl ->
-        navHostController.navigate(TncPageDestination.getDestination(tncUrl))
+    val openTncPage: () -> Unit = {
+        navHostController.navigate(TncPage.getDestination())
     }
 
     val openEndScreen: (String) -> Unit = { endText ->
-        navHostController.navigate(EndScreenDestination.getDestination(endText))
+        navHostController.navigate(EndScreen.getDestination(endText))
     }
 }
 
 @ComposeDestination
-abstract class UserPage {
-    abstract val userId: String
-    abstract val isLoggedIn: Boolean
-    abstract val userIds: IntArray
-    abstract val userNames: ArrayList<String>
-    abstract val uniqueUser: User
-    abstract val uniqueUsers: ArrayList<User>
+interface UserPage {
+    @HasDefaultValue
+    val userId: String
+    val isLoggedIn: Boolean
+    val userIds: IntArray
+    val userNames: ArrayList<String>
+    @HasDefaultValue
+    val uniqueUser: User
+    val uniqueUsers: ArrayList<User>
+
+    @ArgumentProvider
+    companion object : IUserPageProvider {
+        override val userId: String
+            get() = "sample-user-id"
+        override val uniqueUser: User
+            get() = User(id = -1, name = "default")
+    }
 }
 
 data class User(
@@ -59,15 +76,27 @@ data class User(
 }
 
 @ComposeDestination
-abstract class HomePage {
+interface HomePage {
+    companion object
 }
 
 @ComposeDestination
-abstract class TncPage {
-    abstract val tncUrl: String
+interface TncPage {
+    @HasDefaultValue
+    val tncUrl: String
+
+    companion object
+}
+
+@ArgumentProvider
+object TncPageProvider : ITncPageProvider {
+    override val tncUrl: String
+        get() = "www.sample-url.com"
 }
 
 @ComposeDestination
-abstract class EndScreen {
-    abstract val endText: String
+interface EndScreen {
+    val endText: String
+
+    companion object
 }

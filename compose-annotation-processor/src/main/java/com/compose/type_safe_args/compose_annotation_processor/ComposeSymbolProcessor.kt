@@ -17,24 +17,51 @@ class ComposeSymbolProcessor(
 
         if (!symbols.iterator().hasNext()) return emptyList()
 
-        val packageName = "com.compose.type_safe_args.safecomposeargs"
-        val file = codeGenerator.createNewFile(
-            dependencies = Dependencies(false, *resolver.getAllFiles().toList().toTypedArray()),
-            packageName = packageName,
-            fileName = "GeneratedFunctions"
-        )
-        file addLine "package $packageName"
-        file addLine "import androidx.navigation.*"
-        file addLine "import android.net.Uri"
-        file addLine "import android.os.Bundle"
-        file addLine "import com.google.gson.reflect.TypeToken"
-        file addLine "import com.compose.type_safe_args.annotation.*"
-        file addLine ""
+        val argumentProviders = resolver
+            .getSymbolsWithAnnotation("com.compose.type_safe_args.annotation.ArgumentProvider")
+            .filterIsInstance<KSClassDeclaration>()
 
-        symbols.forEach { it.accept(NavTypeVisitor(file, resolver, logger, options), Unit) }
-        symbols.forEach { it.accept(ComposeDestinationVisitor(file, resolver, logger, options), Unit) }
+        val argumentProviderMap = mutableMapOf<KSClassDeclaration, KSClassDeclaration>()
+        argumentProviders.forEach { argumentProvider ->
+            symbols.forEach { composeDestination ->
+                if (argumentProvider.superTypes.map { it.toString() }
+                        .contains("I${composeDestination.simpleName.asString()}Provider")) {
+                    argumentProviderMap[composeDestination] = argumentProvider
+                }
+            }
+        }
 
-        file.close()
-        return symbols.filterNot { it.validate() }.toList()
+        symbols.forEach {
+            val packageName = it.packageName.asString()
+
+            val file = codeGenerator.createNewFile(
+                dependencies = Dependencies(false, *resolver.getAllFiles().toList().toTypedArray()),
+                packageName = packageName,
+                fileName = it.simpleName.asString()
+            )
+
+            file addLine "package $packageName"
+            file addLine "import androidx.navigation.*"
+            file addLine "import android.net.Uri"
+            file addLine "import android.os.Bundle"
+            file addLine "import com.google.gson.reflect.TypeToken"
+            file addLine "import com.compose.type_safe_args.annotation.*"
+            file addLine ""
+
+            it.accept(DefaultArgumentVisitor(file, resolver, logger, options), Unit)
+            it.accept(NavTypeVisitor(file, resolver, logger, options), Unit)
+            it.accept(
+                ComposeDestinationVisitor(
+                    file,
+                    resolver,
+                    logger,
+                    options,
+                    argumentProviderMap
+                ), Unit
+            )
+            file.close()
+        }
+
+        return emptyList()
     }
 }
