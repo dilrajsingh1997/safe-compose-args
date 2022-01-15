@@ -8,14 +8,17 @@ import com.compose.type_safe_args.annotation.ComposeDestination
 import com.compose.type_safe_args.annotation.HasDefaultValue
 
 class NavigationGraph(private val navHostController: NavHostController) {
-    val openUserPage: (Boolean, IntArray, ArrayList<String>, ArrayList<User>) -> Unit = { isLoggedIn, userIds, userNames, uniqueUsers ->
-        navHostController.navigate(UserPage.getDestination(
-            isLoggedIn = isLoggedIn,
-            userIds = userIds,
-            userNames = userNames,
-            uniqueUsers = uniqueUsers
-        ))
-    }
+    val openUserPage: (Boolean, IntArray, ArrayList<String>, ArrayList<User>) -> Unit =
+        { isLoggedIn, userIds, userNames, uniqueUsers ->
+            navHostController.navigate(
+                UserPage.getDestination(
+                    isLoggedIn = isLoggedIn,
+                    userIds = userIds,
+                    userNames = userNames,
+                    uniqueUsers = uniqueUsers
+                )
+            )
+        }
 
     val openTncPage: () -> Unit = {
         navHostController.navigate(TncPage.getDestination())
@@ -33,6 +36,7 @@ interface UserPage {
     val isLoggedIn: Boolean
     val userIds: IntArray
     val userNames: ArrayList<String>
+
     @HasDefaultValue
     val uniqueUser: User
     val uniqueUsers: ArrayList<User>
