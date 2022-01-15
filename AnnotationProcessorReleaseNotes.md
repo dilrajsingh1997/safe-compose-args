@@ -1,5 +1,5 @@
 # 1.0.3
-* Adding imports for all the data types used in the generated files, so that instead of the full qualified name of the class, the simple name can be used.
+* Adding imports for all the data types used in the generated files, so that instead of the full qualified name of the class, the simple name can be used
 * Adding support for `ENUM` classes
 
 # 1.0.2
