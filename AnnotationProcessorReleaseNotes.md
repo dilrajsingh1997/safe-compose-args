@@ -1,8 +1,6 @@
-# 1.0.0
-* Initial version, adding annotation processing for `ComposeDestination`. For details on how to use, checkout ReadMe.md
-
-# 1.0.1
-* Adding support for nullable properties
+# 1.0.3
+* Adding imports for all the data types used in the generated files, so that instead of the full qualified name of the class, the simple name can be used.
+* Adding support for `ENUM` classes
 
 # 1.0.2
 * Now if you provide a `companion object` to the abstract class or interface definition, the processor will generate extension methods rather than creating a new class for getting the route. Below example demonstrates how the `getDestination` method will look with and without giving a `companion object`. This will improve navigation as the user can jump directly to the interface/abstract class definition to find the contract of the compose destination
@@ -116,6 +114,8 @@ object UserPageProvider : IUserPageProvider {
 }
 ```
 
-# 1.0.3
-* Adding imports for all the data types used in the generated files, so that instead of the full qualified name of the class, the simple name can be used.
-* Adding support for `ENUM` classes
+# 1.0.0
+* Initial version, adding annotation processing for `ComposeDestination`. For details on how to use, checkout ReadMe.md
+
+# 1.0.1
+* Adding support for nullable properties
