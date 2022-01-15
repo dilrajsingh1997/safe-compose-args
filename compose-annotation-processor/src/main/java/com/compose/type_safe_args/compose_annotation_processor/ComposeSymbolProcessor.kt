@@ -40,7 +40,6 @@ class ComposeSymbolProcessor(
                 fileName = it.simpleName.asString()
             )
 
-
             val propertyMap = getPropertyMap(it.getAllProperties(), logger, resolver) ?: run {
                 logger.error("invalid argument found")
                 return@forEach
