@@ -5,7 +5,6 @@
 `compose-annotation-processor`     
 [![compose-annotation](https://img.shields.io/badge/version-1.0.3-green.svg)](https://mvnrepository.com/artifact/io.github.dilrajsingh1997/compose-annotation-processor)
 
-
 # Safe-Compose-Args
 This is a compile-time annotation processor that will generate type-safe methods to get/retrieve arguments for a jetpack compose destination so that we don't have to construct string routes or read from back stack entry. Please go through the release notes to find the latest features [[annotation](https://github.com/dilrajsingh1997/safe-compose-args/blob/main/AnnotationReleaseNotes.md)] [[annotation-processor](https://github.com/dilrajsingh1997/safe-compose-args/blob/main/AnnotationProcessorReleaseNotes.md)]. Integration guide is mentioned below. This repo is explained in the following articles: 
 <br />
@@ -13,7 +12,8 @@ This is a compile-time annotation processor that will generate type-safe methods
 <br />
 [Part-2](https://proandroiddev.com/safe-compose-arguments-an-improved-way-to-navigate-in-jetpack-compose-part-2-218a6ae7a027)
 <br />
-Consider the following example for better understanding-
+
+Consider the following example for better understanding. Let's say we have a `UserPage` composable that expects 2 arguments, a `userId` which is of String type and a `uniqueUser` which is a custom data class object. This concept of expecting 2 arguments can be represented by the following interface-
 ```
 @ComposeDestination
 interface UserPage {
@@ -91,6 +91,18 @@ navHostController.navigate(UserPage.getDestination(
     uniqueUser = User(name = "name", age = -1)
 ))
 ```
+
+## Concept of Interface
+Interface defines the structure of a composable destination. This has many benefits as detailed out in the articles. A short version is as follows-
+1. Compile-time safety for all the number of arguments for any composable and their types
+2. Make sure the same key is not re-used for different arguments
+
+## Salient features
+1. Support for default values
+2. Support for nullable types
+3. Support for serializable and parcelable types
+4. Support for list type objects (ArrayLisy<T>)
+5. Support for native array types, `IntArray` in kotlin or `int[]` in java (IntArray, LongArray, BooleanArray, FloatArray)
 
 # Integration guide to include this as a library in your project
 Below article explains step by step process in depth. But for a quick setup, please follow the following-
