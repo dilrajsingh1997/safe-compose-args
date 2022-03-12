@@ -58,3 +58,11 @@ dependencies {
     implementation(com.compose.type_safe_args.buildSrc.properties.Dependency.Gson.gson)
 }
 
+ext {
+    set("PUBLISH_VERSION", "$version")
+    set("PUBLISH_ARTIFACT_ID", "compose-annotation")
+}
+
+apply {
+    from("${rootProject.projectDir}/scripts/publish-module.gradle")
+}
