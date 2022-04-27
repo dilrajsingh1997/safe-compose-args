@@ -124,4 +124,4 @@ ksp {
     arg("ignoreGenericArgs", "false")
 }
 ```
-[Integration-Article](https://proandroiddev.com/safe-compose-arguments-an-improved-way-to-navigate-in-jetpack-compose-part-3-2e5ab79b9a05)
+[Integration-Guide](https://proandroiddev.com/safe-compose-arguments-an-improved-way-to-navigate-in-jetpack-compose-part-3-2e5ab79b9a05)
