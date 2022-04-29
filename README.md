@@ -105,7 +105,7 @@ Interface defines the structure of a composable destination. This has many benef
 5. Support for native array types, `IntArray` in kotlin or `int[]` in java (IntArray, LongArray, BooleanArray, FloatArray)
 
 # Integration guide to include this as a library in your project
-Below article explains step by step process in depth. But for a quick setup, please follow the following-
+The article at the end of the section explains the process in depth. But for a quick setup, please follow the following-
 - Include ksp plugin in `app/build.gradle` -> `id("com.google.devtools.ksp") version "1.5.30-1.0.0"`
 - Include the ksp library, annotation library and the annotation processor as follows
 ```
@@ -115,9 +115,9 @@ implementation("com.google.devtools.ksp:symbol-processing-api:1.5.30-1.0.0")
 ```
 - Construct the gradle file so that the build time generate files are accesible by the normal code
 ```
-kotlin.sourceSets.main {
-    kotlin.srcDirs(
-        file("$buildDir/generated/ksp/"),
+androidComponents.onVariants { variant ->
+    kotlin.sourceSets.findByName(variant.name)?.kotlin?.srcDirs(
+        file("$buildDir/generated/ksp/${variant.name}/kotlin")
     )
 }
 ksp {
