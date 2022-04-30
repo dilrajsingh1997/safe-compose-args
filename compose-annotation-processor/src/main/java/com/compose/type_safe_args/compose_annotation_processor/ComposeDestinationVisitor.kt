@@ -179,6 +179,15 @@ class ComposeDestinationVisitor(
             file addLine "}"
         }
 
+        val providerClassName =
+            if (propertyMap.any { it.value.hasDefaultValue } &&
+                argumentProviderMap.containsKey(classDeclaration)
+            ) {
+                argumentProviderMap[classDeclaration]?.simpleName?.asString()
+            } else {
+                null
+            }
+
         var argumentString = ""
         var count = 0
         file addLine "val ${getSingletonExtension()}argumentList"
@@ -216,6 +225,16 @@ class ComposeDestinationVisitor(
             file addLine "navArgument(\"$argumentName\") {"
             tabs++
             file addLine "type = ${getElementNavType()}"
+            file addLine "nullable = ${propertyInfo.isNullable}"
+            if (propertyInfo.hasDefaultValue) {
+                file addLine "defaultValue = "
+                file addPhrase "${
+                    providerClassName ?: logger.error(
+                        "no provider found for $argumentName",
+                        property
+                    )
+                }.${argumentName}"
+            }
             tabs--
             file addLine "},"
             tabs--
@@ -227,15 +246,6 @@ class ComposeDestinationVisitor(
         }
         file addLine ")"
         tabs--
-
-        val providerClassName =
-            if (propertyMap.any { it.value.hasDefaultValue } &&
-                argumentProviderMap.containsKey(classDeclaration)
-            ) {
-                argumentProviderMap[classDeclaration]?.simpleName?.asString()
-            } else {
-                null
-            }
 
         file addLine "fun ${getSingletonExtension()}getDestination("
         properties.forEach { property ->

@@ -32,20 +32,20 @@ class NavigationGraph(private val navHostController: NavHostController) {
 @ComposeDestination
 interface UserPage {
     @HasDefaultValue
-    val userId: String
+    val userId: String?
     val isLoggedIn: Boolean
     val userIds: IntArray
     val userNames: ArrayList<String>
 
     @HasDefaultValue
-    val uniqueUser: User
+    val uniqueUser: User?
     val uniqueUsers: ArrayList<User>
 
     @ArgumentProvider
     companion object : IUserPageProvider {
-        override val userId: String
-            get() = "sample-user-id"
-        override val uniqueUser: User
+        override val userId: String?
+            get() = null
+        override val uniqueUser: User?
             get() = User(id = -1, name = "default")
     }
 }

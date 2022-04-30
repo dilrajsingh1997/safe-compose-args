@@ -23,9 +23,17 @@ android {
     buildTypes {
         getByName("debug") {
             isDebuggable = true
+            isMinifyEnabled = false
+            isShrinkResources = false
         }
         getByName("release") {
             isDebuggable = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
     buildFeatures {
@@ -48,17 +56,6 @@ android {
     defaultConfig {
         versionCode = 1
         versionName = "1.0"
-    }
-
-    buildTypes {
-
-        getByName("release") {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
     }
 }
 
@@ -97,9 +94,9 @@ dependencies {
     appLocalProjectDependencies()
 }
 
-kotlin.sourceSets.main {
-    kotlin.srcDirs(
-        file("$buildDir/generated/ksp/"),
+androidComponents.onVariants { variant ->
+    kotlin.sourceSets.findByName(variant.name)?.kotlin?.srcDirs(
+        file("$buildDir/generated/ksp/${variant.name}/kotlin")
     )
 }
 

@@ -4,11 +4,11 @@ plugins {
     kotlin("jvm")
 }
 
-version = "1.0.3"
+version = "1.0.4"
 
 dependencies {
-    implementation(Dependency.Kotlin.stdlib)
-    implementation(Dependency.Ksp.symbolProcessingApi)
+    api(Dependency.Kotlin.stdlib)
+    api(Dependency.Ksp.symbolProcessingApi)
 }
 
 ext {

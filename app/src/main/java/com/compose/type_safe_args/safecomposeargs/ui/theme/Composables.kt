@@ -95,7 +95,7 @@ fun DemoScreen() {
                     )
                     Spacer(modifier = Modifier.height(20.dp))
                     Text(
-                        text = "Unique User is ${uniqueUser.id} ${uniqueUser.name}",
+                        text = "Unique User is ${uniqueUser?.id} ${uniqueUser?.name}",
                         textAlign = TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(20.dp))

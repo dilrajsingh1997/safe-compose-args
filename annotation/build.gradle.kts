@@ -1,8 +1,4 @@
-
-import com.android.build.api.variant.LibraryVariant
-import com.android.build.gradle.api.ApplicationVariant
-import com.android.build.gradle.api.BaseVariantOutput
-import com.android.build.gradle.internal.api.BaseVariantOutputImpl
+import com.compose.type_safe_args.buildSrc.properties.Dependency
 
 plugins {
     id("com.android.library")
@@ -19,7 +15,7 @@ android {
         targetSdk = com.compose.type_safe_args.buildSrc.properties.Dependency.targetSdk
         vectorDrawables.useSupportLibrary = true
     }
-    version = "1.0.1"
+    version = "1.0.2"
 
     setProperty("archivesBaseName", "${project.name}-$version")
 
@@ -51,11 +47,11 @@ android {
 }
 
 dependencies {
-    implementation(com.compose.type_safe_args.buildSrc.properties.Dependency.Kotlin.stdlib)
-    implementation(com.compose.type_safe_args.buildSrc.properties.Dependency.AndroidX.coreKtx)
+    api(Dependency.Kotlin.stdlib)
+    api(Dependency.AndroidX.coreKtx)
 
-    implementation(com.compose.type_safe_args.buildSrc.properties.Dependency.Compose.navigation)
-    implementation(com.compose.type_safe_args.buildSrc.properties.Dependency.Gson.gson)
+    api(Dependency.Compose.navigation)
+    api(Dependency.Gson.gson)
 }
 
 ext {
