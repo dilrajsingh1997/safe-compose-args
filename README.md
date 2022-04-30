@@ -105,23 +105,74 @@ Interface defines the structure of a composable destination. This has many benef
 5. Support for native array types, `IntArray` in kotlin or `int[]` in java (IntArray, LongArray, BooleanArray, FloatArray)
 
 # Integration guide to include this as a library in your project
-Below article explains step by step process in depth. But for a quick setup, please follow the following-
-- Include ksp plugin in `app/build.gradle` -> `id("com.google.devtools.ksp") version "1.5.30-1.0.0"`
+The article at the end of the section explains the process in depth. But for a quick setup, please follow the following-
+- Include ksp plugin in `app/build.gradle`
+<details>
+  <summary>Groovy</summary>
+
+```
+plugins {
+    id 'com.google.devtools.ksp' version '1.5.30-1.0.0'
+}
+```
+</details>
+
+<details open>
+  <summary>Kotlin</summary>  
+
+```
+plugins {
+    id("com.google.devtools.ksp") version "1.5.30-1.0.0"
+}
+```
+</details>
+
 - Include the ksp library, annotation library and the annotation processor as follows
+
+<details>
+  <summary>Groovy</summary>
+
 ```
 implementation "io.github.dilrajsingh1997:compose-annotation:1.0.1"
+ksp "io.github.dilrajsingh1997:compose-annotation-processor:1.0.3"
+implementation "com.google.devtools.ksp:symbol-processing-api:1.5.30-1.0.0"
+```
+</details>
+
+<details open>
+  <summary>Kotlin</summary>  
+
+```
+implementation("io.github.dilrajsingh1997:compose-annotation:1.0.1")
 ksp("io.github.dilrajsingh1997:compose-annotation-processor:1.0.3")
 implementation("com.google.devtools.ksp:symbol-processing-api:1.5.30-1.0.0")
 ```
+</details>
+    
+
 - Construct the gradle file so that the build time generate files are accesible by the normal code
+    
+<details>
+  <summary>Groovy</summary>
+
 ```
-kotlin.sourceSets.main {
-    kotlin.srcDirs(
-        file("$buildDir/generated/ksp/"),
+WIP :)
+```
+</details>
+
+<details open>
+  <summary>Kotlin</summary>  
+
+```
+androidComponents.onVariants { variant ->
+    kotlin.sourceSets.findByName(variant.name)?.kotlin?.srcDirs(
+        file("$buildDir/generated/ksp/${variant.name}/kotlin")
     )
 }
 ksp {
     arg("ignoreGenericArgs", "false")
 }
 ```
-[Integration-Article](https://proandroiddev.com/safe-compose-arguments-an-improved-way-to-navigate-in-jetpack-compose-part-3-2e5ab79b9a05)
+</details>
+
+[Integration-Guide](https://proandroiddev.com/safe-compose-arguments-an-improved-way-to-navigate-in-jetpack-compose-part-3-2e5ab79b9a05)
