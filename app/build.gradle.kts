@@ -1,5 +1,5 @@
 import com.compose.type_safe_args.buildSrc.properties.Dependency
-import com.compose.type_safe_args.buildSrc.properties.Dependency.compileSdk
+import com.compose.type_safe_args.buildSrc.properties.KspProject
 import com.compose.type_safe_args.buildSrc.properties.appLocalProjectDependencies
 
 plugins {
@@ -69,7 +69,7 @@ dependencies {
     testImplementation(Dependency.Test.junit4)
 
     implementation(project(":annotation"))
-    ksp(project(com.compose.type_safe_args.buildSrc.properties.KspProject.composeBuilder))
+    ksp(project(KspProject.composeBuilder))
 
     implementation(Dependency.Compose.runtime)
     implementation(Dependency.Compose.material)
