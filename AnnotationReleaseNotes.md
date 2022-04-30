@@ -1,3 +1,6 @@
+# 1.0.2
+* Changing the `implementation` to `api` in gradle
+
 # 1.0.1
 * Adding `HasDefaultValue` annotation, used for identifying properties that have default values
 * Adding `ArgumentProvider` annotation, to identify the source providing the default value of the properties
