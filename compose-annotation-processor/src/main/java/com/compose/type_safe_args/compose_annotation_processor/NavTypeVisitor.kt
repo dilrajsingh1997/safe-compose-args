@@ -44,18 +44,18 @@ class NavTypeVisitor(
             file addPhrase "> = object : NavType<"
             addVariableType(file, propertyInfo)
             file addPhrase ">(${propertyInfo.isNullable}) {"
-            tabs++
+            file.increaseIndent()
 
             file addLine "override val name: String"
-            tabs++
+            file.increaseIndent()
             file addLine "get() = "
             file addPhrase "\"${propertyInfo.propertyName}\""
-            tabs--
+            file.decreaseIndent()
 
             file addLine "override fun get(bundle: Bundle, key: String): "
             addVariableType(file, propertyInfo)
             file addPhrase " {"
-            tabs++
+            file.increaseIndent()
 
             when (propertyInfo.composeArgumentType) {
                 ComposeArgumentType.PARCELABLE -> {
@@ -81,23 +81,23 @@ class NavTypeVisitor(
                 }
             }
 
-            tabs--
+            file.decreaseIndent()
             file addLine "}"
 
             file addLine "override fun parseValue(value: String): "
             addVariableType(file, propertyInfo)
             file addPhrase " {"
-            tabs++
+            file.increaseIndent()
             file addLine "return gson.fromJson(value, object : TypeToken<"
             addVariableType(file, propertyInfo)
             file addPhrase ">() {}.type)"
-            tabs--
+            file.decreaseIndent()
             file addLine "}"
 
             file addLine "override fun put(bundle: Bundle, key: String, value: "
             addVariableType(file, propertyInfo)
             file addPhrase ") {"
-            tabs++
+            file.increaseIndent()
 
             when (propertyInfo.composeArgumentType) {
                 ComposeArgumentType.PARCELABLE -> file addLine "bundle.putParcelable(key, value)"
@@ -105,10 +105,10 @@ class NavTypeVisitor(
                 ComposeArgumentType.SERIALIZABLE -> file addLine "bundle.putSerializable(key, value)"
             }
 
-            tabs--
+            file.decreaseIndent()
             file addLine "}"
 
-            tabs--
+            file.decreaseIndent()
             file addLine "}"
         }
     }

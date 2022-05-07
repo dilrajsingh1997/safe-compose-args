@@ -37,14 +37,14 @@ class DefaultArgumentVisitor(
 
         if (defaultProperties.isNotEmpty()) {
             file addLine "interface I${className}Provider {"
-            tabs++
+            file.increaseIndent()
 
             defaultProperties.forEach { defaultProperty ->
                 file addLine "val ${defaultProperty.propertyName}: "
                 addVariableType(file, defaultProperty)
             }
 
-            tabs--
+            file.decreaseIndent()
             file addLine "}"
         }
     }

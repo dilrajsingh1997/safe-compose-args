@@ -8,7 +8,7 @@ import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.Nullability
 import java.io.OutputStream
 
-fun getPropertyMap(
+internal fun getPropertyMap(
     properties: Sequence<KSPropertyDeclaration>,
     logger: KSPLogger,
     resolver: Resolver
@@ -103,26 +103,60 @@ fun getPropertyMap(
     return propertyMap
 }
 
-fun addImports(file: OutputStream, properties: Collection<PropertyInfo>) {
-    val importSet = mutableSetOf<String>()
+internal fun addImports(file: OutputStream, properties: Collection<PropertyInfo>) {
     properties.forEach { propertyInfo ->
-        if (importSet.contains(propertyInfo.resolvedClassQualifiedName).not()) {
-            importSet.add(propertyInfo.resolvedClassQualifiedName)
-            file addLine "import ${propertyInfo.resolvedClassQualifiedName}"
-        }
+        file addImport "import ${propertyInfo.resolvedClassQualifiedName}"
     }
 }
 
-var tabs = 0
+internal val filePropertyMap = mutableMapOf<OutputStream, OutputStreamProperties>()
 
-infix fun OutputStream.addLine(line: String) {
+internal infix fun OutputStream.addLine(line: String) {
+    this.initializeFile()
     this.write("\n".toByteArray())
-    repeat(tabs) {
+
+    repeat(filePropertyMap[this]?.tabs ?: 0) {
         this.write("\t".toByteArray())
     }
     this.write(line.toByteArray())
 }
 
-infix fun OutputStream.addPhrase(line: String) {
+internal infix fun OutputStream.addPhrase(line: String) {
+    this.initializeFile()
     this.write(line.toByteArray())
 }
+
+internal infix fun OutputStream.addImport(import: String) {
+    this.initializeFile()
+
+    if (filePropertyMap[this]?.importSet?.contains(import) == false) {
+        filePropertyMap[this]?.importSet?.add(import)
+        this.write("\n".toByteArray())
+        this.write(import.toByteArray())
+    }
+}
+
+internal fun OutputStream.dispose() {
+    this.close()
+    filePropertyMap.remove(this)
+}
+
+internal fun OutputStream.initializeFile() {
+    if (!filePropertyMap.containsKey(this)) {
+        filePropertyMap[this] = OutputStreamProperties(tabs = 0, importSet = mutableSetOf())
+    }
+}
+
+internal fun OutputStream.increaseIndent() {
+    filePropertyMap[this]?.apply {
+        tabs++
+    }
+}
+
+internal fun OutputStream.decreaseIndent() {
+    filePropertyMap[this]?.apply {
+        tabs--
+    }
+}
+
+internal data class OutputStreamProperties(var tabs: Int, val importSet: MutableSet<String>)

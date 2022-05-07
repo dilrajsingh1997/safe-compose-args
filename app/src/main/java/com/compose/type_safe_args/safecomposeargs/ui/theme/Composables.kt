@@ -71,7 +71,9 @@ fun DemoScreen() {
             route = UserPage.route,
             arguments = UserPage.argumentList
         ) { backStackEntry ->
-            val (userId, isLoggedIn, userIds, userNames, uniqueUser, uniqueUsers) = UserPage.parseArguments(backStackEntry)
+            val (userId, isLoggedIn, userIds, userNames, uniqueUser, uniqueUsers) = remember {
+                UserPage.parseArguments(backStackEntry)
+            }
             Box(modifier = Modifier.fillMaxSize()) {
                 Column(
                     modifier = Modifier.align(Alignment.Center),

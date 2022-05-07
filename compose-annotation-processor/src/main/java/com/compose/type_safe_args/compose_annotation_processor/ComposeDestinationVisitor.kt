@@ -39,12 +39,12 @@ class ComposeDestinationVisitor(
 
         if (singletonClass == null) {
             file addLine "class ${route}Destination {"
-            tabs++
+            file.increaseIndent()
         }
 
         if (propertyMap.isNotEmpty()) {
             file addLine "data class $dataClassName ("
-            tabs++
+            file.increaseIndent()
 
             properties.forEach { property ->
                 val propertyInfo = propertyMap[property] ?: run {
@@ -56,22 +56,22 @@ class ComposeDestinationVisitor(
                 file addPhrase ", "
             }
 
-            tabs--
+            file.decreaseIndent()
             file addLine ")"
         }
 
         if (singletonClass == null) {
             file addLine "companion object {"
-            tabs++
+            file.increaseIndent()
         }
 
         if (propertyMap.isNotEmpty()) {
             file addLine "fun ${getSingletonExtension()}parseArguments(backStackEntry: NavBackStackEntry): $dataClassName {"
-            tabs++
+            file.increaseIndent()
 
             file addLine "return "
             file addPhrase "$dataClassName("
-            tabs++
+            file.increaseIndent()
 
             properties.forEach { property ->
                 val propertyInfo = propertyMap[property] ?: run {
@@ -172,10 +172,10 @@ class ComposeDestinationVisitor(
                 file addPhrase ", "
             }
 
-            tabs--
+            file.decreaseIndent()
             file addLine ")"
 
-            tabs--
+            file.decreaseIndent()
             file addLine "}"
         }
 
@@ -192,7 +192,7 @@ class ComposeDestinationVisitor(
         var count = 0
         file addLine "val ${getSingletonExtension()}argumentList"
         file addPhrase ": MutableList<NamedNavArgument> "
-        tabs++
+        file.increaseIndent()
         file addLine "get() = mutableListOf("
         count = 0
         properties.forEach { property ->
@@ -221,9 +221,9 @@ class ComposeDestinationVisitor(
                 }
             }
 
-            tabs++
+            file.increaseIndent()
             file addLine "navArgument(\"$argumentName\") {"
-            tabs++
+            file.increaseIndent()
             file addLine "type = ${getElementNavType()}"
             file addLine "nullable = ${propertyInfo.isNullable}"
             if (propertyInfo.hasDefaultValue) {
@@ -235,9 +235,9 @@ class ComposeDestinationVisitor(
                     )
                 }.${argumentName}"
             }
-            tabs--
+            file.decreaseIndent()
             file addLine "},"
-            tabs--
+            file.decreaseIndent()
 
             argumentString += "$argumentName={$argumentName}"
             if (count != propertyMap.size) {
@@ -245,7 +245,7 @@ class ComposeDestinationVisitor(
             }
         }
         file addLine ")"
-        tabs--
+        file.decreaseIndent()
 
         file addLine "fun ${getSingletonExtension()}getDestination("
         properties.forEach { property ->
@@ -273,11 +273,11 @@ class ComposeDestinationVisitor(
             file addPhrase ", "
         }
         file addPhrase "): String {"
-        tabs++
+        file.increaseIndent()
 
         file addLine "return \"$route${if (propertyMap.isNotEmpty()) "?" else ""}\" + "
-        tabs++
-        tabs++
+        file.increaseIndent()
+        file.increaseIndent()
         count = 0
         properties.forEach { property ->
             count++
@@ -306,13 +306,13 @@ class ComposeDestinationVisitor(
             file addPhrase " + "
         }
         file addLine "\"\""
-        tabs--
-        tabs--
+        file.decreaseIndent()
+        file.decreaseIndent()
 
-        tabs--
+        file.decreaseIndent()
         file addLine "}"
         file addLine "val ${getSingletonExtension()}route"
-        tabs++
+        file.increaseIndent()
 
         file addLine "get() = "
         file addPhrase "\"$route"
@@ -322,15 +322,15 @@ class ComposeDestinationVisitor(
         }
         file addPhrase "\""
 
-        tabs--
+        file.decreaseIndent()
 
         if (singletonClass == null) {
-            tabs--
+            file.decreaseIndent()
             file addLine "}"
         }
 
         if (singletonClass == null) {
-            tabs--
+            file.decreaseIndent()
             file addLine "}"
         }
     }
