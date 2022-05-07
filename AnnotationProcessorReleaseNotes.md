@@ -1,3 +1,6 @@
+# 1.0.5
+* Fixing bug related to default argument provider mapping (now moved to package name class matching instead of class name)
+
 # 1.0.4
 * Changing the `implementation` to `api` in gradle
 * Fixed bug with passing null arguments to a destination
