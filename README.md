@@ -133,8 +133,8 @@ plugins {
   <summary>Groovy</summary>
 
 ```
-implementation "io.github.dilrajsingh1997:compose-annotation:1.0.1"
-ksp "io.github.dilrajsingh1997:compose-annotation-processor:1.0.3"
+implementation "io.github.dilrajsingh1997:compose-annotation:<latest-version-here>"
+ksp "io.github.dilrajsingh1997:compose-annotation-processor:<latest-version-here>"
 implementation "com.google.devtools.ksp:symbol-processing-api:1.5.30-1.0.0"
 ```
 </details>
@@ -143,8 +143,8 @@ implementation "com.google.devtools.ksp:symbol-processing-api:1.5.30-1.0.0"
   <summary>Kotlin</summary>  
 
 ```
-implementation("io.github.dilrajsingh1997:compose-annotation:1.0.1")
-ksp("io.github.dilrajsingh1997:compose-annotation-processor:1.0.3")
+implementation("io.github.dilrajsingh1997:compose-annotation:<latest-version-here>")
+ksp("io.github.dilrajsingh1997:compose-annotation-processor:<latest-version-here>")
 implementation("com.google.devtools.ksp:symbol-processing-api:1.5.30-1.0.0")
 ```
 </details>
