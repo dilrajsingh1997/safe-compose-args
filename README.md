@@ -92,6 +92,8 @@ navHostController.navigate(UserPage.getDestination(
 ))
 ```
 
+Full example can be found [here](https://github.com/dilrajsingh1997/safe-compose-args/blob/main/app/src/main/java/com/compose/type_safe_args/safecomposeargs/ui/theme/Composables.kt).
+
 ## Concept of Interface
 Interface defines the structure of a composable destination. This has many benefits as detailed out in the articles. A short version is as follows-
 1. Compile-time safety for all the number of arguments for any composable and their types
