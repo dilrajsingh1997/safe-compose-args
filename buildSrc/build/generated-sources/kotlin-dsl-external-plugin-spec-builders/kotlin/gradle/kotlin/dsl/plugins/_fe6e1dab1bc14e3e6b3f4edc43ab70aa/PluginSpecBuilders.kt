@@ -29,7 +29,7 @@
 
 /* ktlint-disable */
 
-package gradle.kotlin.dsl.plugins._2a0ca2f6b5a0b18e807963e83a4261da
+package gradle.kotlin.dsl.plugins._fe6e1dab1bc14e3e6b3f4edc43ab70aa
 
 import org.gradle.plugin.use.PluginDependenciesSpec
 import org.gradle.plugin.use.PluginDependencySpec
@@ -788,6 +788,14 @@ val `OrgGradlePluginGroup`.`jvm-ecosystem`: PluginDependencySpec
 
 
 /**
+ * The `org.gradle.jvm-test-suite` plugin implemented by [org.gradle.api.plugins.JvmTestSuitePlugin].
+ */
+internal
+val `OrgGradlePluginGroup`.`jvm-test-suite`: PluginDependencySpec
+    get() = plugins.id("org.gradle.jvm-test-suite")
+
+
+/**
  * The `org.gradle.language-base` plugin implemented by [org.gradle.language.base.plugins.LanguageBasePlugin].
  */
 internal
@@ -961,6 +969,14 @@ val `OrgGradlePluginGroup`.`swift-library`: PluginDependencySpec
 internal
 val `OrgGradlePluginGroup`.`swiftpm-export`: PluginDependencySpec
     get() = plugins.id("org.gradle.swiftpm-export")
+
+
+/**
+ * The `org.gradle.test-suite-base` plugin implemented by [org.gradle.testing.base.plugins.TestSuiteBasePlugin].
+ */
+internal
+val `OrgGradlePluginGroup`.`test-suite-base`: PluginDependencySpec
+    get() = plugins.id("org.gradle.test-suite-base")
 
 
 /**
