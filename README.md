@@ -1,9 +1,9 @@
 `compose-annotation`    
-[![compose-annotation](https://img.shields.io/badge/version-1.0.2-yellow.svg)](https://mvnrepository.com/artifact/io.github.dilrajsingh1997/compose-annotation)
+[![compose-annotation](https://img.shields.io/badge/version-1.0.3-yellow.svg)](https://mvnrepository.com/artifact/io.github.dilrajsingh1997/compose-annotation)
 
 
 `compose-annotation-processor`     
-[![compose-annotation](https://img.shields.io/badge/version-1.0.5-green.svg)](https://mvnrepository.com/artifact/io.github.dilrajsingh1997/compose-annotation-processor)
+[![compose-annotation](https://img.shields.io/badge/version-1.0.6-green.svg)](https://mvnrepository.com/artifact/io.github.dilrajsingh1997/compose-annotation-processor)
 
 # Safe-Compose-Args
 This is a compile-time annotation processor that will generate type-safe methods to get/retrieve arguments for a jetpack compose destination so that we don't have to construct string routes or read from back stack entry. Please go through the release notes to find the latest features [[annotation](https://github.com/dilrajsingh1997/safe-compose-args/blob/main/AnnotationReleaseNotes.md)] [[annotation-processor](https://github.com/dilrajsingh1997/safe-compose-args/blob/main/AnnotationProcessorReleaseNotes.md)]. Integration guide is mentioned below. This repo is explained in the following articles: 
@@ -102,9 +102,10 @@ Interface defines the structure of a composable destination. This has many benef
 ## Salient features
 1. Support for default values
 2. Support for nullable types
-3. Support for serializable and parcelable types
-4. Support for list type objects (ArrayLisy<T>)
-5. Support for native array types, `IntArray` in kotlin or `int[]` in java (IntArray, LongArray, BooleanArray, FloatArray)
+3. Support for optional arguments
+4. Support for serializable and parcelable types
+5. Support for list type objects (ArrayLisy<T>)
+6. Support for native array types, `IntArray` in kotlin or `int[]` in java (IntArray, LongArray, BooleanArray, FloatArray)
 
 # Integration guide to include this as a library in your project
 The article at the end of the section explains the process in depth. But for a quick setup, please follow the following-
