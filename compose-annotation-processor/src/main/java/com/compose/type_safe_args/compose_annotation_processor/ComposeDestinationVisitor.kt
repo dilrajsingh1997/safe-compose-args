@@ -2,7 +2,6 @@ package com.compose.type_safe_args.compose_annotation_processor
 
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
-import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSType
@@ -11,7 +10,6 @@ import com.google.devtools.ksp.symbol.KSVisitorVoid
 import com.google.devtools.ksp.symbol.Nullability
 import com.google.devtools.ksp.symbol.Variance
 import java.io.OutputStream
-import javax.swing.DefaultSingleSelectionModel
 
 class ComposeDestinationVisitor(
     private val file: OutputStream,
@@ -20,7 +18,7 @@ class ComposeDestinationVisitor(
     private val options: Map<String, String>,
     private val argumentProviderMap: MutableMap<KSClassDeclaration, KSClassDeclaration>,
     private val propertyMap: Map<KSPropertyDeclaration, PropertyInfo>,
-    private val singletonClass: KSClassDeclaration?
+    private val singletonClass: KSClassDeclaration?,
 ) : KSVisitorVoid() {
 
     override fun visitClassDeclaration(classDeclaration: KSClassDeclaration, data: Unit) {
@@ -221,6 +219,14 @@ class ComposeDestinationVisitor(
                 }
             }
 
+            if (propertyInfo.isOptional && !(propertyInfo.isNullable || propertyInfo.hasDefaultValue)) {
+                logger.error(
+                    message = "All optional arguments must be null or have a default value, https://developer.android.com/jetpack/compose/navigation#optional-args",
+                    property
+                )
+                return
+            }
+
             file.increaseIndent()
             file addLine "navArgument(\"$argumentName\") {"
             file.increaseIndent()
@@ -239,9 +245,9 @@ class ComposeDestinationVisitor(
             file addLine "},"
             file.decreaseIndent()
 
-            argumentString += "$argumentName={$argumentName}"
+            argumentString += "/{$argumentName}"
             if (count != propertyMap.size) {
-                argumentString += ","
+                argumentString += ""
             }
         }
         file addLine ")"
@@ -269,42 +275,80 @@ class ComposeDestinationVisitor(
                         property
                     )
                 }.${argumentName}"
+            } else if (propertyInfo.isOptional && propertyInfo.isNullable) {
+                file addPhrase " = null"
             }
             file addPhrase ", "
         }
         file addPhrase "): String {"
         file.increaseIndent()
 
-        file addLine "return \"$route${if (propertyMap.isNotEmpty()) "?" else ""}\" + "
+        file addLine "return \"$route\" + "
         file.increaseIndent()
         file.increaseIndent()
         count = 0
-        properties.forEach { property ->
-            count++
-
-            val propertyInfo = propertyMap[property] ?: run {
-                logger.error("Invalid type argument", property)
-                return
+        properties
+            .filter {
+                propertyMap[it]?.isOptional?.not() ?: true
             }
-            val argumentName = propertyInfo.propertyName
+            .forEach { property ->
+                count++
 
-            file addLine "\"$argumentName="
+                val propertyInfo = propertyMap[property] ?: run {
+                    logger.error("Invalid type argument", property)
+                    return
+                }
+                val argumentName = propertyInfo.propertyName
 
-            file addPhrase when (propertyInfo.composeArgumentType) {
-                ComposeArgumentType.INT,
-                ComposeArgumentType.BOOLEAN,
-                ComposeArgumentType.LONG,
-                ComposeArgumentType.FLOAT,
-                ComposeArgumentType.STRING -> "$$argumentName"
-                else -> "\${Uri.encode(gson.toJson($argumentName))}"
-            }
-            if (count == propertyMap.size) {
+                file addLine "\"/"
+
+                file addPhrase when (propertyInfo.composeArgumentType) {
+                    ComposeArgumentType.INT,
+                    ComposeArgumentType.BOOLEAN,
+                    ComposeArgumentType.LONG,
+                    ComposeArgumentType.FLOAT,
+                    ComposeArgumentType.STRING,
+                    -> "$$argumentName"
+                    else -> "\${Uri.encode(gson.toJson($argumentName))}"
+                }
                 file addPhrase "\""
-            } else {
-                file addPhrase ",\""
+                file addPhrase " + "
             }
-            file addPhrase " + "
-        }
+
+        var firstOptionalProperty = true
+
+        properties
+            .filter {
+                propertyMap[it]?.isOptional ?: true
+            }
+            .forEach { property ->
+                count++
+
+                val propertyInfo = propertyMap[property] ?: run {
+                    logger.error("Invalid type argument", property)
+                    return
+                }
+                val argumentName = propertyInfo.propertyName
+
+                if (firstOptionalProperty) {
+                    firstOptionalProperty = false
+                    file addLine "\"?$argumentName="
+                } else {
+                    file addLine "\"$argumentName="
+                }
+
+                file addPhrase when (propertyInfo.composeArgumentType) {
+                    ComposeArgumentType.INT,
+                    ComposeArgumentType.BOOLEAN,
+                    ComposeArgumentType.LONG,
+                    ComposeArgumentType.FLOAT,
+                    ComposeArgumentType.STRING,
+                    -> "$$argumentName"
+                    else -> "\${Uri.encode(gson.toJson($argumentName))}"
+                }
+                file addPhrase ",\""
+                file addPhrase " + "
+            }
         file addLine "\"\""
         file.decreaseIndent()
         file.decreaseIndent()
@@ -316,10 +360,49 @@ class ComposeDestinationVisitor(
 
         file addLine "get() = "
         file addPhrase "\"$route"
-        if (argumentString.isNotEmpty()) {
-            file addPhrase "?"
-            file addPhrase argumentString
-        }
+
+
+        properties
+            .filter {
+                propertyMap[it]?.isOptional?.not() ?: true
+            }
+            .forEach { property ->
+                count++
+
+                val propertyInfo = propertyMap[property] ?: run {
+                    logger.error("Invalid type argument", property)
+                    return
+                }
+                val argumentName = propertyInfo.propertyName
+
+                file addPhrase "/"
+                file addPhrase "{$argumentName}"
+            }
+
+        firstOptionalProperty = true
+
+        properties
+            .filter {
+                propertyMap[it]?.isOptional ?: true
+            }
+            .forEach { property ->
+                count++
+
+                val propertyInfo = propertyMap[property] ?: run {
+                    logger.error("Invalid type argument", property)
+                    return
+                }
+                val argumentName = propertyInfo.propertyName
+
+                if (firstOptionalProperty) {
+                    firstOptionalProperty = false
+                    file addPhrase "?$argumentName={$argumentName}"
+                } else {
+                    file addPhrase "$argumentName={$argumentName}"
+                }
+                file addPhrase ","
+            }
+
         file addPhrase "\""
 
         file.decreaseIndent()

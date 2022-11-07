@@ -97,7 +97,8 @@ internal fun getPropertyMap(
                     }
                 }
             },
-            hasDefaultValue = property.annotations.map { it.shortName.asString() }.any { it == "HasDefaultValue" }
+            hasDefaultValue = property.annotations.map { it.shortName.asString() }.any { it == "HasDefaultValue" },
+            isOptional = property.annotations.map { it.shortName.asString() }.any { it == "OptionalParam" }
         )
     }
     return propertyMap

@@ -43,6 +43,7 @@ fun DemoScreen() {
                     Button(
                         onClick = {
                             graph.openUserPage(
+                                null,
                                 false,
                                 intArrayOf(1, 2, 5),
                                 arrayListOf("user1, user2"),
@@ -71,7 +72,7 @@ fun DemoScreen() {
             route = UserPage.route,
             arguments = UserPage.argumentList
         ) { backStackEntry ->
-            val (userId, isLoggedIn, userIds, userNames, uniqueUser, uniqueUsers) = remember {
+            val (userId, isLoggedIn, userIds, uniqueUser, uniqueUsers, userNames, phone) = remember {
                 UserPage.parseArguments(backStackEntry)
             }
             Box(modifier = Modifier.fillMaxSize()) {
@@ -103,6 +104,11 @@ fun DemoScreen() {
                     Spacer(modifier = Modifier.height(20.dp))
                     Text(
                         text = "Unique Users are ${uniqueUsers.joinToString(separator = " -- ") { it.id.toString() + it.name }}",
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Text(
+                        text = "Phone number is $phone",
                         textAlign = TextAlign.Center
                     )
                 }

@@ -6,16 +6,18 @@ import androidx.navigation.NavHostController
 import com.compose.type_safe_args.annotation.ArgumentProvider
 import com.compose.type_safe_args.annotation.ComposeDestination
 import com.compose.type_safe_args.annotation.HasDefaultValue
+import com.compose.type_safe_args.annotation.OptionalParam
 
 class NavigationGraph(private val navHostController: NavHostController) {
-    val openUserPage: (Boolean, IntArray, ArrayList<String>, ArrayList<User>) -> Unit =
-        { isLoggedIn, userIds, userNames, uniqueUsers ->
+    val openUserPage: (String?, Boolean, IntArray, ArrayList<String>, ArrayList<User>) -> Unit =
+        { userId, isLoggedIn, userIds, userNames, uniqueUsers ->
             navHostController.navigate(
                 UserPage.getDestination(
+                    userId = userId,
                     isLoggedIn = isLoggedIn,
                     userIds = userIds,
                     userNames = userNames,
-                    uniqueUsers = uniqueUsers
+                    uniqueUsers = uniqueUsers,
                 )
             )
         }
@@ -31,20 +33,25 @@ class NavigationGraph(private val navHostController: NavHostController) {
 
 @ComposeDestination
 interface UserPage {
-    @HasDefaultValue
     val userId: String?
     val isLoggedIn: Boolean
     val userIds: IntArray
-    val userNames: ArrayList<String>
 
     @HasDefaultValue
     val uniqueUser: User?
     val uniqueUsers: ArrayList<User>
 
+    @OptionalParam
+    @HasDefaultValue
+    val userNames: ArrayList<String>
+
+    @OptionalParam
+    val phone: String?
+
     @ArgumentProvider
     companion object : IUserPageProvider {
-        override val userId: String?
-            get() = null
+        override val userNames: ArrayList<String>
+            get() = arrayListOf()
         override val uniqueUser: User?
             get() = User(id = -1, name = "default")
     }
@@ -52,7 +59,7 @@ interface UserPage {
 
 data class User(
     val id: Int,
-    val name: String
+    val name: String,
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readInt(),

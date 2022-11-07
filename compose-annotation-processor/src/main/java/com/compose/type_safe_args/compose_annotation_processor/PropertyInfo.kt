@@ -12,5 +12,6 @@ data class PropertyInfo(
     val typeArguments: List<KSTypeArgument>,
     val isNullable: Boolean,
     val composeArgumentType: ComposeArgumentType,
-    val hasDefaultValue: Boolean
+    val hasDefaultValue: Boolean,
+    val isOptional: Boolean
 )
