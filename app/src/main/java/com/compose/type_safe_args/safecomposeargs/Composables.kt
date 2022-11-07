@@ -1,6 +1,5 @@
-package com.compose.type_safe_args.safecomposeargs.ui.theme
+package com.compose.type_safe_args.safecomposeargs
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Text
@@ -13,10 +12,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.plusAssign
-import com.compose.type_safe_args.safecomposeargs.*
-import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
-import java.util.*
 
 @Composable
 fun DemoScreen() {
