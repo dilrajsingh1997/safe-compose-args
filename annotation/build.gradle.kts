@@ -15,7 +15,7 @@ android {
         targetSdk = com.compose.type_safe_args.buildSrc.properties.Dependency.targetSdk
         vectorDrawables.useSupportLibrary = true
     }
-    version = "1.0.2"
+    version = "1.0.3"
 
     setProperty("archivesBaseName", "${project.name}-$version")
 
