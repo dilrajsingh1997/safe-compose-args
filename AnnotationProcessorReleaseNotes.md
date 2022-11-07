@@ -1,3 +1,6 @@
+# 1.0.6
+* Adding support for optional arguments. To make a variable as optional, you can mark that variable with `@OptionalParam`, which will tell the annotation processor to provide its default value given one, else it will by default assign a null value to the optional argument. Please note: as per [documentation](https://developer.android.com/jetpack/compose/navigation#optional-args), all the optional arguments must have a default value or a nullable data type.
+
 # 1.0.5
 * Fixing bug related to default argument provider mapping (now moved to package name class matching instead of class name)
 
