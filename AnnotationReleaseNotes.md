@@ -1,3 +1,6 @@
+# 1.0.3
+* Adding new annotation `@OptionalParam` for allowing optional arguments.
+
 # 1.0.2
 * Changing the `implementation` to `api` in gradle
 
